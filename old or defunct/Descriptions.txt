@@ -1,0 +1,183 @@
+--------------------------------------------------------------------------------
+active_trips
+--------------------------------------------------------------------------------
+    sum_active:
+        "Active Vehicles" 
+        This is a count of the total number of vehicles that are currently operating on this route for any 10-minute time period.
+
+--------------------------------------------------------------------------------
+active_trips_bytod
+--------------------------------------------------------------------------------
+    sum_active:
+        "Active Vehicles"
+        This is a count of the total number of vehicles anywhere in the agency that are serving customers during each 10-minute time period.
+
+--------------------------------------------------------------------------------
+all_trips_per_day
+--------------------------------------------------------------------------------
+    sum_active:
+        "Number of Trips per Day"
+        Agencies provide different amounts of service depending on the day of week. This illustrates the total number of trips scheduled by day.
+
+--------------------------------------------------------------------------------
+all_trips_per_timeofday
+--------------------------------------------------------------------------------
+    sum_active:
+        "Number of Trips by Time"
+        Agencies provide different amounts of service throughout the various days of the week. This illustrates the total number of trips scheduled at each time over the course of a day. 
+		
+--------------------------------------------------------------------------------
+route
+--------------------------------------------------------------------------------
+
+	route_id
+	dow
+	direction_id
+		"Direction"
+		This is a field to differentiate between routes serving two directions when the destinations aren't shown. It's somewhat ambiguous but is loosely described by Google as simply one of two directions.
+		
+	route_type
+		"Mode"
+        The classification system used with this data identifies mode categories. 0 = streetcars, light rail on other on-street rail vehicles. 1 = subways and metros. 2 = commuter or intercity rail. 3 = bus. 4 = ferries. 5 = cable car. 6 = gondola. 7 = funicular. 
+		
+	average_speed
+		"Route Speed"
+		This is the scheduled speed that the route is served using the length and times for all trip throughout the day.
+		
+	average_length_mi
+		"Route Length"
+		This is the length of the route in miles. Changes in service throughout the day make for slightly different routing, such as certain trips that go a longer distance; this is calculated on the most common configuration of the route.
+		
+	trips_each_dir
+		"Trips per Day"
+		For each direction of this route, this is the total number of trips throughout a day.
+		
+	route_avg_hdwy
+		"Route Headway"
+		Each headway in the system is calculated as the time between arrivals for a specific route at a specific stop. The route headway is calculated as the average of all headways sharing that route. 
+		
+	route_stdev_hdwy
+		"Headway Variability (Standard Deviation)"
+		The standard deviation of the headway calculated in the previous average is an indication of how much variability there is in headways throughout the course of a day. A low standard deviation indicates consistent headways all day while a higher standard deviation indicates variability, such as frequent peak commuter service with infrequent mid-day service.
+		
+	trip_headsign
+		"Destination"
+		This is what the agency describes as the direction or destination of this route.
+
+	hours_of_service
+		"Hours of Service"
+		This is the number of hours where this route provides at least 60-minute headway service. In some cases, this will be less than the span of service, for example when a commuter service runs only in the AM and PM peak hours.
+		
+	service_span
+		"Span of Service"
+		This is the number of hours between the first departure and the last arrival of a route. Given the length of the route and the possibility that trips start and end after midnight, this may be more than 24 hours. 
+		
+	avg_stop_dist_space_ft
+		"Average stop spacing"
+		(This should be converted to miles)
+		The average distance between stops on this route.  Changes in service throughout the day make for slightly different routing, such as certain trips that go a longer distance; this is calculated on the most common configuration of the route.
+	
+	route_short_name
+		"Route Number"
+		The number or abbreviation of this route as described by the agency.
+		
+	route_long_name
+		"Route Name"
+		The name of the route as described by the agency.
+	
+--------------------------------------------------------------------------------
+stop_route
+--------------------------------------------------------------------------------
+
+    trips_serving_stop
+        "Arrivals per Day"
+        This is the number of transit trips that will serve this stop over the course of a day on the route you're viewing.
+	
+	rte_stop_avg_hdwy
+		"Average daily headway"
+		Over the course of the day, this is the average number of minutes between arrivals of this route at this stop.
+
+	stop_sequence
+		DO NOT SHOW
+		
+	trip_headsign
+		"Destination"
+		This is what the agency describes as the direction or destination of this route.
+		
+	shape_id
+		DO NOT SHOW
+		
+	average_length_mi
+		"Route Length"
+		This is the length of the route in miles. Changes in service throughout the day make for slightly different routing, such as certain trips that go a longer distance; this is calculated on the most common configuration of the route.
+		
+	average_speed
+		"Speed on Route"
+		
+		
+	min_arrive_sec
+	min_arrive_time
+		"First Arrival:
+		This is the time the first trip of the day provides service at this stop for this route. This excludes trips that are logically beginning late from the previous evening.
+	
+	max_dep_sec
+	max_dep_time
+		"Last Departure"
+		This is the time the last trip of the day provides service at this stop for this route. It may be after midnight.
+
+--------------------------------------------------------------------------------
+stop
+--------------------------------------------------------------------------------
+
+	stop_name
+		"Stop Name"
+		
+	stop_id
+	dow
+	direction_id
+	stop_avg_hdwy
+		"Stop Headway"
+		Each headway in the system is calculated as the time between arrivals for a specific route at a specific stop. The stop headway is calculated as the average of all headways sharing this stop, regardless of the route.
+		
+	total_trips_serving_stop
+		"Arrivals per Day"
+		This is the total number of trips that arrive at this stop each day, regardless of what route they serve. This provides an overall indication of service around this area.
+		
+	lrt_trips
+		"Arrivals by Mode: Light rail, streetcar, tram"
+		Total number of light rail, streetcar or tram trips that arrive at this stop, regardless of the route.
+	
+	subway_trips
+		"Arrivals by Mode: subway, metro"
+		Total number of subway or metro trips that arrive at this stop, regardless of the route.
+
+	rail_trips
+		"Arrivals by Mode: commuter/intercity rail"
+		Total number of rail trips (either commuter or intercity) that arrive at this stop, regardless of the route.
+		
+	bus_trips
+		"Arrivals by Mode: bus"
+		Total number of bus trips (either local or intercity) that arrive at this stop, regardless of the route.	
+	
+	total_rts_serving_stop
+		"Number of routes serving stop"
+		This is a count of unique routes that serve this stop according to the agency descriptions of routes.
+		
+	lrt_routes
+	subway_routes
+	rail_routes
+	bus_routes
+
+	svc_span_hrs
+		"Span of Service"
+		This is the number of hours between the first departure and the last arrival of a route. Given the length of the route and the possibility that trips start and end after midnight, this may be more than 24 hours. 
+	
+	min_arrive_sec
+	min_arrive_time
+		"First Arrival:
+		This is the time the first trip of the day provides service at this stop for any route. This excludes trips that are logically beginning late from the previous evening.
+	
+	max_dep_sec
+	max_dep_time
+		"Last Departure"
+		This is the time the last trip of the day provides service at this stop for any route. It may be after midnight.

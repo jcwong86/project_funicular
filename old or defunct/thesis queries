@@ -1,0 +1,158 @@
+
+--Revenue Hours
+
+SELECT 	trip_id, 
+	first_departure_sec, 
+	last_arrival_sec, 
+	round((last_arrival_sec-first_departure_sec)::numeric/3600,3) AS rev_hrs
+FROM (
+	SELECT 	trips.trip_id, 
+		min(d_sec_past_mid) AS first_departure_sec, 
+		max(a_sec_past_mid) AS last_arrival_sec
+	FROM trips
+	INNER JOIN new_stop_times 
+	ON (trips.trip_id=new_stop_times.trip_id)
+	GROUP BY trips.trip_id) a;
+
+
+--First/Last Stop ID
+CREATE TABLE trip_stops AS
+SELECT c.trip_id, first_stop_id, last_stop_id
+FROM(
+	SELECT a.trip_id, stop_id first_stop_id
+	FROM (
+		SELECT trip_id, MIN(d_sec_past_mid) first_departure
+		FROM new_stop_times
+		GROUP BY trip_id) a
+	INNER JOIN new_stop_times b 
+	ON (a.trip_id=b.trip_id AND a.first_departure=b.d_sec_past_mid)) c
+JOIN(
+	SELECT d.trip_id, stop_id last_stop_id
+	FROM (
+		SELECT trip_id, MAX(a_sec_past_mid) last_arrival
+		FROM new_stop_times
+		GROUP BY trip_id) d
+	INNER JOIN new_stop_times e
+	ON (d.trip_id=e.trip_id AND d.last_arrival=e.d_sec_past_mid)) f
+ON (c.trip_id=f.trip_id);
+	
+--First and Last stop geoms
+CREATE TABLE trip_stop_geoms AS
+SELECT first_geom.trip_id, first_stop_id, first_stop_geom, last_stop_id, last_stop_geom
+FROM (
+	SELECT trip_id, first_stop_id, stop_geom as first_stop_geom
+	FROM geo_stops
+	INNER JOIN trip_stops
+	ON(trip_stops.first_stop_id=geo_stops.stop_id)) first_geom
+JOIN (
+	SELECT trip_id, last_stop_id, stop_geom as last_stop_geom
+	FROM geo_stops
+	INNER JOIN trip_stops
+	ON(trip_stops.last_stop_id=geo_stops.stop_id)) last_geom
+ON (first_geom.trip_id=last_geom.trip_id)
+
+
+--Table of Trips and Route Geoms
+CREATE TABLE trip_shape_geoms AS
+SELECT trip_id, trips.shape_id, line_geom
+FROM trips, geo_lines
+WHERE geo_lines.shape_id=trips.shape_id
+
+
+-- Vehicle Miles
+CREATE TABLE veh_miles AS 
+SELECT 	trip_stop_geoms.trip_id, 
+	(ST_Line_Locate_Point(line_geom,last_stop_geom) 
+	- ST_Line_Locate_Point(line_geom,first_stop_geom)) 
+	* ST_Length(ST_Transform(line_geom,900913))  --In Meters
+	* 0.000621371 as veh_miles --to Miles
+FROM trip_stop_geoms, trip_shape_geoms
+WHERE trip_stop_geoms.trip_id=trip_shape_geoms.trip_id;
+
+
+-- Veh Mi Summary Table by route
+SELECT route_short_name, route_long_name, service_id, round(sum(veh_miles)::numeric,2) as veh_mi_per_svc_day
+FROM veh_miles, trips, routes
+WHERE veh_miles.trip_id=trips.trip_id and trips.route_id=routes.route_id
+GROUP BY route_short_name, service_id, route_long_name
+ORDER BY route_short_name, service_id;
+
+-- Veh Mi summary Table by Svc ID
+
+SELECT service_id, round(sum(veh_miles)::numeric,2) as veh_mi_per_svc_day
+FROM veh_miles, trips, routes
+WHERE veh_miles.trip_id=trips.trip_id and trips.route_id=routes.route_id and route_type='3'
+GROUP BY service_id
+ORDER BY service_id
+
+
+-- veh hr summary table by route
+SELECT route_short_name, route_long_name, service_id, round(sum(veh_hrs)::numeric,2) as veh_hr_per_svc_day
+FROM veh_hrs, trips, routes
+WHERE veh_hrs.trip_id=trips.trip_id and trips.route_id=routes.route_id
+GROUP BY route_short_name, service_id, route_long_name
+ORDER BY route_short_name, service_id;
+
+--vehicle hours
+
+CREATE TABLE veh_hrs AS
+SELECT 	c.trip_id,
+	round((last_arrive_sec-first_depart_sec)::numeric/3600,2) AS veh_hrs
+FROM (
+	SELECT 	trip_stops.trip_id, 
+		d_sec_past_mid AS first_depart_sec 
+	FROM 	trip_stops, 
+		new_stop_times a
+	WHERE 	trip_stops.first_stop_id=a.stop_id AND
+		trip_stops.trip_id=a.trip_id) c
+JOIN (
+	SELECT 	trip_stops.trip_id, 
+		a_sec_past_mid AS last_arrive_sec
+	FROM 	trip_stops, 
+		new_stop_times b
+	WHERE 	trip_stops.last_stop_id=b.stop_id AND
+		trip_stops.trip_id=b.trip_id) d
+ON c.trip_id=d.trip_id
+
+
+-- TO DO: Transpose calendar.txt so that we cna outer join this table above with 
+
+
+
+
+
+
+
+
+
+
+-- Create table of days/yr
+
+DROP TABLE IF EXISTS days2011;
+
+CREATE TABLE days2011 (
+	day 		varchar(10),
+	yr_count	integer);
+
+INSERT INTO days2011 VALUES 
+	('Sunday',52),
+	('Monday',52),
+	('Tuesday',52),
+	('Wednesday',52),
+	('Thursday',52),
+	('Friday',52),
+	('Saturdday',53);
+
+
+
+
+
+
+SELECT	SUM(veh_miles)
+FROM veh_miles, trips
+WHERE 	veh_miles.trip_id=trips.trip_id AND 
+	service_id IN (
+		SELECT service_id
+		FROM calendar
+		WHERE sunday = '1')
+

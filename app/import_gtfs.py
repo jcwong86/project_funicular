@@ -217,7 +217,7 @@ def go(gtfs_filename, in_dbname, in_username, in_password):
     dbname = in_dbname
     username = in_username
     password = in_password
-    path = "..\\gtfs_feeds\\"+gtfs_filename
+    path = os.path.normcase("../gtfs_feeds/" + gtfs_filename)
 
     print "----------------------------------"
     print "Starting import_gtfs."

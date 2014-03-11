@@ -49,3 +49,5 @@ def go(gtfs_filename, in_dbname, in_username, in_password, out_folder_path):
         print "Total runtime: "+ str(math.trunc((time.time()-local_start)/60)) + " min " +str(round((time.time()-local_start)%60)) +" sec."
     print "----------------------------------"
 
+if __name__ == "__main__":
+    go(sys.argv[1:])

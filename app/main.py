@@ -20,12 +20,14 @@
 # THE SOFTWARE.
 
 import import_gtfs
+import output_files
 import calculate_metrics
 import prep_tables
 import get_modes
 import time
 import math
 import date_svc_id_select
+import sys
 
 # for out_folder_path on a windows machine, go to "c:\\tmp\\"
 def go(gtfs_filename, in_dbname, in_username, in_password, out_folder_path):
@@ -39,7 +41,7 @@ def go(gtfs_filename, in_dbname, in_username, in_password, out_folder_path):
         modenums = get_modes.go(in_dbname, in_username, in_password)
         for num in modenums:
             calculate_metrics.go(in_dbname, in_username, in_password, num)
-            #output_files.go(in_dbname, in_username, in_password, out_folder_path, gtfs_filename, num, start_date_YYYYMMDD)
+            output_files.go(in_dbname, in_username, in_password, out_folder_path, gtfs_filename, num)
         print "GTFS Reader completed."
     else:
         print " !ERROR: Calendar date issue - program terminated."

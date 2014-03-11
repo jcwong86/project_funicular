@@ -15,7 +15,9 @@ def go(db,u,p,mode_number_as_txt):
                             veh_hours_by_trip,
                             veh_miles_by_svc,
                             veh_hours_by_svc,
-                            ntd_out;
+                            ntd_out,
+                            stop_summary,
+                            out_stop;
     """
 
 
@@ -188,8 +190,45 @@ def go(db,u,p,mode_number_as_txt):
                                     FROM 	rev_hr_mi_by_date) b
                             GROUP BY dayofweek) b) c;
     """
-    
-    queries = [drop_tables, qry_first_last_stops, qry_first_last_geoms,qry_trip_route_geoms,qry_veh_miles_by_trip,qry_veh_miles_by_svc,qry_veh_hrs,qry_veh_hrs_by_svc]
+    stop_summary = """
+        -- Note, takes max of routes identified for either dir at any svc_id.
+        CREATE TABLE stop_summary AS
+        SELECT  stop_id, 
+            count(distinct route_id) as numRoutes,
+            array_to_string(array_agg(distinct route_id),',') AS route_ids_served,
+            array_to_string(array_agg(distinct route_short_name),',') AS route_short_names_served,
+            array_to_string(array_agg(distinct route_long_name),',') AS route_long_names_served
+        FROM    stop_times a
+            JOIN (
+                SELECT route_id, trip_id
+                FROM trips) c
+            USING (trip_id)
+            JOIN (
+                SELECT route_id, route_long_name, route_short_name
+                FROM routes) d
+            USING (route_id)
+        GROUP BY stop_id
+        ORDER BY stop_id;
+
+    """
+
+    out_stop ="""
+        CREATE TABLE out_stop AS
+        SELECT  stop_geom as the_geom,
+            stop_id,
+            stops.stop_lat,
+            stops.stop_lon,
+            stops.stop_name,
+            stop_desc,
+            numroutes,
+            route_ids_served,
+            route_short_names_served,
+            route_long_names_served
+        FROM    stop_summary JOIN
+            stops USING (stop_id) JOIN
+            geo_stops USING (stop_id);
+    """    
+    queries = [drop_tables, qry_first_last_stops, qry_first_last_geoms,qry_trip_route_geoms,qry_veh_miles_by_trip,qry_veh_miles_by_svc,qry_veh_hrs,qry_veh_hrs_by_svc, stop_summary, out_stop]
 
     "perform second level analysis for all route and stop-level queries"
     local_start=time.time()

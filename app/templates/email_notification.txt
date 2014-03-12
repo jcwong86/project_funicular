@@ -1,0 +1,16 @@
+Dear {{email}},
+
+
+funicular has finished processing the following GTFS file!
+
+{{GTFS_description}}
+
+Please click the link below to download:
+
+{{url_for('download_file', unique_string = unique_string, _external = True)}}
+
+Note that this link will expire in three days.
+
+
+Thanks for using funicular!
+The funicular team

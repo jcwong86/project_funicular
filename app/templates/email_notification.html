@@ -1,0 +1,9 @@
+<p>Dear {{email}},</p>
+<br>
+<p>funicular has finished processing the following file!
+<p style="font-weight: bold;">{{GTFS_description}}</p>
+<p>Please <a href="{{url_for('download_file', unique_string = unique_string, _external = True)}}">click here</a> to download.</p>
+<p>Note that this link will expire in three days.</p>
+<br>
+<p>Thanks for using funicular!</p>
+<p>The funicular team</p>

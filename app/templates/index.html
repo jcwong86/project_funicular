@@ -9,20 +9,49 @@
 <div class="page-header">
 	<h3>Select an agency</h3>
 </div>
-<form class="form-inline" role="form">
+<form class="form-inline" role="form" action="{{url_for('index')}}">
 	<div class="form-group">
-		<select class="form-control" id="agency-select" required autofocus>
-			<option value="" selected disabled>select an agency</option>
+		<select name="agency" class="form-control" id="agency-select" required>
+			<option value"" selected disabled>select an agency</option>
 			{% for agency in agencies %}
 			<option value="{{agency.dataexchange_id}}">{{agency.name}}</option>
 			{% endfor %}
 		</select>
 	</div>
-	<button type="button" id="submit" class="btn btn-primary">Go!</button>
+	<button type="submit" id="submit" class="btn btn-primary">Go!</button>
 </form>
 <div class="GTFS-table-container">
+	{% if active_agency %}
+	<div class="page-header">
+		<h3>Select GTFS file &mdash; {{active_agency.data.agency.name}}</h3>
+	</div>
+	<table class="table table-striped GTFS-table">
+		<thead>
+			<tr>
+				<th>Description</th>
+				<th>Added</th>
+				<th>User</th>
+				<th>Select</th>
+			</tr>
+		</thead>
+		<tbody>
+			{% for datafile in active_agency.data.datafiles %}
+			<tr>
+				<td>{{datafile.description}}</td>
+				<td>{{momentjsunix(datafile.date_added).calendar()}}</td>
+				<td>{{datafile.uploaded_by_user}}</td>
+				<td><a href="#" onclick="confirmGTFSSelection(
+					'{{datafile.description}}', '{{datafile.date_added}}',
+					'{{datafile.uploaded_by_user}}', '{{datafile.file_url}}'); return false;
+					">select</a></td>
+			</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+	{% endif %}
 </div>
-<div class="disclaimer-container hidden">
+{% if active_agency %}
+<div class="disclaimer-container">
 	<div class="page-header">
 	<h3>Fine print</h3>
 	</div>
@@ -30,8 +59,9 @@
 		Add disclaimers here.
 	</div>
 </div>
+{% endif %}
 
-<div class="modal fade" tabindex="-1" role="dialog">
+<div class="modal fade" id="modal1" tabindex="-1" role="dialog">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
@@ -52,28 +82,59 @@
 				  <div class="form-group">
 				    <!--<label for="exampleInputEmail1">Email address</label>-->
 				    <input type="email" class="form-control" id="email-input" placeholder="enter email">
-				  	<button type="button" class="btn btn-primary" data-dismiss="modal">Submit</button>
+				  	<button type="button" class="btn btn-primary" id="confirm">Submit</button>
 		        <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
 				  </div>
 				 </form>
       </div>
-
     </div><!-- /.modal-content -->
   </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
+
+<div class="modal fade" id="modal2" tabindex="-1" role="dialog">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title" id="myModalLabel">File processing</h4>
+      </div>
+      <div class="modal-body">
+        <p>funicular is currently processing your GTFS file:</p>
+        <p class="GTFS-description"></p>
+        <!--<p class="GTFS-date-added"></p>
+        <p class="GTFS-user"></p>-->
+        <p>You will receive a notification at <span class="user-email">email address</span> when your file is ready.</p>
+        <p>Thank you for using funicular!</p>
+      </div>
+      <div class="modal-footer">
+      	<form class="form-inline" role="form">
+				  <div class="form-group">
+		        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+				  </div>
+				 </form>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
 {% endblock %}
 
 {% block script_content %}
 <script>
-	$(document).ready(function() {
-		$('#submit').click(function(){
-			if($('#agency-select')[0].value === "") {
-				addAlert('danger', true, 'Error: no agency selected.');
-				$('#agency-select').focus();
-			} else {
-				getAgencyInfo($('#agency-select')[0].value);
-			}
-		})
-	});
+	{% if active_agency %}
+	$('#agency-select')[0].value = '{{active_agency.data.agency.dataexchange_id}}';
+	{% else %}
+	$('#agency-select')[0].focus();
+	{% endif %}
+	// $(document).ready(function() {
+	// 	$('#submit').click(function(){
+	// 		if($('#agency-select')[0].value === "") {
+	// 			addAlert('danger', true, 'Error: no agency selected.');
+	// 			$('#agency-select').focus();
+	// 		} else {
+	// 			getAgencyInfo($('#agency-select')[0].value);
+	// 		}
+	// 	})
+	// });
 </script>
 {% endblock %}

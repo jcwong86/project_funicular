@@ -21,3 +21,9 @@ body {
   padding-right: 15px;
   padding-left: 15px;
 }
+.span-right {
+  float: right;
+}
+.GTFS-description, .user-email{
+  font-weight: bold;
+}

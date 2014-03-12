@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <!-- <link rel="shortcut icon" href="../../assets/ico/favicon.ico"> -->
+    {% if title %}
+    <title>funicular &mdash; {{title}}</title>
+    {% else %}
+    <title>funicular</title>
+    {% endif %}
+    <link href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css" rel="stylesheet">
+    <!--<link type="text/css" rel="stylesheet" href="{{ url_for('static',
+      filename='css/bootstrap.min.css') }}">-->
+    <link type="text/css" rel="stylesheet" href="{{ url_for('static',
+      filename='css/style.css') }}">
+  </head>
+  <body role="document">
+    <div class="container theme-showcase" role="main" id="body-container">
+      <div class="page-header">
+        {% if title %}
+        <h1>funicular &mdash; {{title}}</h1>
+        {% else %}
+        <h1>funicular</h1>
+        {% endif %}
+      </div>
+      <div class="flash-container">
+      {% include 'flash.html' %}
+      </div>
+      {% block html_content %}{% endblock %}
+    </div>
+    <div id="footer">
+      <div class="container">
+        <!-- <br><hr> -->
+        <p class="text-muted">&copy; 2014 
+          <a tabindex="-1" href="http://www.jameswong.org">James Wong</a> and 
+          <a tabindex="-1" href="http://www.twitter.com/drewdez">Andrew Desautels</a>
+        </p>
+      </div>
+    </div>
+<!--     <div id="footer">
+      <div class="container">
+        <p class="text-muted">&copy; 2014 <a tabindex="-1" href="http://www.twitter.com/drewdez">Andrew Desautels</a></p>
+      </div>
+    </div> -->
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+    <!--<script>window.jQuery || document.write('<script src="path/to/your/jquery"><\/script>')</script>-->
+    <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
+    <!--<script src="{{url_for('static', filename='js/bootstrap.min.js')}}"></script>-->
+    <script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.5.1/moment.min.js"></script>
+    <script type="text/javascript" src="{{url_for('static', filename='js/funicular.js')}}"></script>
+    {% block script_content %}{% endblock %}
+  </body>
+</html>

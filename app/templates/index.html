@@ -1,0 +1,79 @@
+<!-- extend base layout -->
+{% extends 'base.html' %}
+
+{% block html_content %}
+<div class="page-header">
+	<h3>About funicular</h3>
+</div>
+<p>Add brief description here</p>
+<div class="page-header">
+	<h3>Select an agency</h3>
+</div>
+<form class="form-inline" role="form">
+	<div class="form-group">
+		<select class="form-control" id="agency-select" required autofocus>
+			<option value="" selected disabled>select an agency</option>
+			{% for agency in agencies %}
+			<option value="{{agency.dataexchange_id}}">{{agency.name}}</option>
+			{% endfor %}
+		</select>
+	</div>
+	<button type="button" id="submit" class="btn btn-primary">Go!</button>
+</form>
+<div class="GTFS-table-container">
+</div>
+<div class="disclaimer-container hidden">
+	<div class="page-header">
+	<h3>Fine print</h3>
+	</div>
+	<div class="well disclaimer-well">
+		Add disclaimers here.
+	</div>
+</div>
+
+<div class="modal fade" tabindex="-1" role="dialog">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title" id="myModalLabel">Confirm your selection</h4>
+      </div>
+      <div class="modal-body">
+        <p>You have chosen to create a shapefile from the following GTFS file:</p>
+        <p class="GTFS-description"></p>
+        <!--<p class="GTFS-date-added"></p>
+        <p class="GTFS-user"></p>-->
+        <p>If this is correct, please enter your email address and click "Submit" below.
+        You will receive an email containing a link to download your file when it is ready.</p>
+        <p>If this is not correct, please click "Cancel" below.</p>
+      </div>
+      <div class="modal-footer">
+      	<form class="form-inline" role="form">
+				  <div class="form-group">
+				    <!--<label for="exampleInputEmail1">Email address</label>-->
+				    <input type="email" class="form-control" id="email-input" placeholder="enter email">
+				  	<button type="button" class="btn btn-primary" data-dismiss="modal">Submit</button>
+		        <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+				  </div>
+				 </form>
+      </div>
+
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+{% endblock %}
+
+{% block script_content %}
+<script>
+	$(document).ready(function() {
+		$('#submit').click(function(){
+			if($('#agency-select')[0].value === "") {
+				addAlert('danger', true, 'Error: no agency selected.');
+				$('#agency-select').focus();
+			} else {
+				getAgencyInfo($('#agency-select')[0].value);
+			}
+		})
+	});
+</script>
+{% endblock %}

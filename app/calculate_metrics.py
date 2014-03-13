@@ -1,9 +1,9 @@
 import psycopg2, time, sys
 
-def go(db,u,p,mode_number_as_txt):
+def go(db,u,p,agency,mode_number_as_txt):
 
     print "Starting calculate_metrics.py."
-    print "M"+mode_number_as_txt
+    print agency.replace('_',' ')+" - M"+mode_number_as_txt
 
     drop_tables = """
     -- . drop_tables
@@ -23,30 +23,32 @@ def go(db,u,p,mode_number_as_txt):
 
     qry_first_last_stops = """
         CREATE TABLE trip_stops AS
-        SELECT 	e.trip_id, 
+        SELECT  e.trip_id, 
                 first_stop_id, 
                 last_stop_id
         FROM (
                 SELECT a.trip_id, b.stop_id as first_stop_id
                 FROM (
-                        SELECT 	trip_id, 
+                        SELECT  trip_id, 
                                 min(stop_sequence) AS min_stop_seq
-                        FROM	stop_times
+                        FROM    stop_times
                         GROUP BY trip_id) a
-                JOIN 	stop_times b
-                ON (	a.trip_id=b.trip_id AND
+                JOIN    stop_times b
+                ON (    a.trip_id=b.trip_id AND
                         a.min_stop_seq=b.stop_sequence)) e
         JOIN (
                 SELECT c.trip_id, d.stop_id as last_stop_id
                 FROM (
-                        SELECT 	trip_id, 
+                        SELECT  trip_id, 
                                 max(stop_sequence) AS max_stop_seq
-                        FROM	stop_times
+                        FROM    stop_times
                         GROUP BY trip_id) c
-                JOIN 	stop_times d
-                ON (	c.trip_id=d.trip_id AND
+                JOIN    stop_times d
+                ON (    c.trip_id=d.trip_id AND
                         c.max_stop_seq=d.stop_sequence)) f
-        ON (	e.trip_id=f.trip_id)         ;"""
+        ON (    e.trip_id=f.trip_id),
+        (SELECT trip_id FROM trip_data WHERE agency_name='%s') z
+        WHERE e.trip_id in (z.trip_id); """ %agency
 
     qry_first_last_geoms ="""
         CREATE  TABLE trip_stop_geoms AS
@@ -65,8 +67,10 @@ def go(db,u,p,mode_number_as_txt):
                 FROM geo_stops
                 INNER JOIN trip_stops
                 ON(trip_stops.last_stop_id=geo_stops.stop_id)) last_geom
-        ON (first_geom.trip_id=last_geom.trip_id);
-        """
+        ON (first_geom.trip_id=last_geom.trip_id),
+        (SELECT trip_id FROM trip_data WHERE agency_name='%s') z
+        WHERE first_geom.trip_id in (z.trip_id);
+        """ %agency
 
     qry_trip_route_geoms = """
         CREATE TABLE trip_shape_geoms AS
@@ -191,26 +195,31 @@ def go(db,u,p,mode_number_as_txt):
                             GROUP BY dayofweek) b) c;
     """
     stop_summary = """
-        -- Note, takes max of routes identified for either dir at any svc_id.
         CREATE TABLE stop_summary AS
+        -- Note, takes max of routes identified for either dir at any svc_id.
         SELECT  stop_id, 
             count(distinct route_id) as numRoutes,
             array_to_string(array_agg(distinct route_id),',') AS route_ids_served,
             array_to_string(array_agg(distinct route_short_name),',') AS route_short_names_served,
             array_to_string(array_agg(distinct route_long_name),',') AS route_long_names_served
-        FROM    stop_times a
+        FROM   stop_times a
             JOIN (
                 SELECT route_id, trip_id
-                FROM trips) c
+                FROM trips) con
             USING (trip_id)
             JOIN (
                 SELECT route_id, route_long_name, route_short_name
                 FROM routes) d
-            USING (route_id)
+            USING (route_id) 
+            JOIN (
+                SELECT stop_id, agency_name 
+                FROM stop_data 
+                WHERE agency_name = '%s') e
+        USING (stop_id)
         GROUP BY stop_id
         ORDER BY stop_id;
 
-    """
+    """ %agency
 
     out_stop ="""
         CREATE TABLE out_stop AS

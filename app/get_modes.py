@@ -1,13 +1,15 @@
 import csv, psycopg2
 
-def go(db,u,p):
+def go(db,u,p, agency):
     "Returns an array of the mode numbers stored as text that exist in each feed."
 
     check_modes = """
         SELECT DISTINCT route_type as mode_num
-        FROM routes
+        FROM routes, agency
+        WHERE agency.agency_id=routes.agency_id AND
+            replace(agency_name,' ','_') = '%s'
         ORDER BY mode_num ASC;
-    """
+    """ %agency
 
     try:
         con = psycopg2.connect(database=db, user=u, password=p)

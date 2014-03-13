@@ -24,6 +24,7 @@ import output_files
 import calculate_metrics
 import prep_tables
 import get_modes
+import get_agencies
 import time
 import math
 import date_svc_id_select
@@ -38,10 +39,15 @@ def go(gtfs_filename, in_dbname, in_username, in_password, out_folder_path):
     if import_gtfs.go(gtfs_filename, in_dbname, in_username, in_password):
         prep_tables.go(in_dbname, in_username, in_password)
         date_svc_id_select.go(in_dbname, in_username, in_password)
-        modenums = get_modes.go(in_dbname, in_username, in_password)
-        for num in modenums:
-            calculate_metrics.go(in_dbname, in_username, in_password, num)
-            output_files.go(in_dbname, in_username, in_password, out_folder_path, gtfs_filename, num)
+
+
+        agencies = get_agencies.go(in_dbname, in_username, in_password)
+
+        for agency in agencies:
+            modenums = get_modes.go(in_dbname, in_username, in_password, agency)
+            for num in modenums:
+                calculate_metrics.go(in_dbname, in_username, in_password, agency, num)
+                output_files.go(in_dbname, in_username, in_password, out_folder_path, gtfs_filename, num, agency)
         print "GTFS Reader completed."
     else:
         print " !ERROR: Calendar date issue - program terminated."

@@ -27,7 +27,7 @@ import get_modes
 import time
 import math
 import date_svc_id_select
-import sys
+from sys import argv
 
 # for out_folder_path on a windows machine, go to "c:\\tmp\\"
 def go(gtfs_filename, in_dbname, in_username, in_password, out_folder_path):
@@ -52,4 +52,4 @@ def go(gtfs_filename, in_dbname, in_username, in_password, out_folder_path):
     print "----------------------------------"
 
 if __name__ == "__main__":
-    go(sys.argv[1:])
+    go(argv[1], argv[2], argv[3], argv[4], argv[5])

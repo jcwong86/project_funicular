@@ -20,26 +20,10 @@ def index():
 		title = agency_info['data']['agency']['name']
 	else:
 		title = 'Home'
-		flash("Welcome to funicular. In case you're new here, you can get started by \
-			selecting an agency below, then clicking on the desired GTFS update.")
 	return render_template('index.html',
 		agencies = agencies_us_official,
 		active_agency = agency_info,
 		title = title)
-
-# @app.route('/get_agencies')
-# def get_agencies():
-# 	url = 'http://www.gtfs-data-exchange.com/api/agencies'
-# 	agencies_all = json.load(urllib.urlopen(url))
-# 	agencies_us_official = []
-# 	for agency in agencies_all['data']:
-# 		if agency['is_official'] == True and agency['country'] == 'United States':
-# 			agencies_us_official.append(agency)
-# 	data = {
-# 		'status': 'OK',
-# 		'data': agencies_us_official
-# 	}
-# 	return jsonify(data)
 
 @app.route('/get_agency_info/<agency_id>', methods = ['POST'])
 def get_agency_info(agency_id):

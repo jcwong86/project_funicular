@@ -103,7 +103,9 @@
         <p class="GTFS-description"></p>
         <!--<p class="GTFS-date-added"></p>
         <p class="GTFS-user"></p>-->
-        <p>You will receive a notification at <span class="user-email">email address</span> when your file is ready.</p>
+        <p>You will receive a notification at 
+        	<span class="user-email">email address</span> 
+        	when your file is ready.</p>
         <p>Thank you for using funicular!</p>
       </div>
       <div class="modal-footer">
@@ -125,16 +127,9 @@
 	$('#agency-select')[0].value = '{{active_agency.data.agency.dataexchange_id}}';
 	{% else %}
 	$('#agency-select')[0].focus();
+	addAlert('info', true, "Welcome to funicular! In case you're new here, \
+		you can get started by selecting an agency below, then clicking on \
+		the desired GTFS update.");
 	{% endif %}
-	// $(document).ready(function() {
-	// 	$('#submit').click(function(){
-	// 		if($('#agency-select')[0].value === "") {
-	// 			addAlert('danger', true, 'Error: no agency selected.');
-	// 			$('#agency-select').focus();
-	// 		} else {
-	// 			getAgencyInfo($('#agency-select')[0].value);
-	// 		}
-	// 	})
-	// });
 </script>
 {% endblock %}

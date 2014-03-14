@@ -1,27 +1,42 @@
-import psycopg2
-import sys
-import string
+import os, subprocess, zipfile
 
-def go(in_dbname, in_username, in_password, out_folder_path, gtfs_name, mode_number_as_txt,agency):
-    "Export key tables from route, stop_route, stop and active_trips into a specified folder that has universal access"
-    
-    #Clean off the last backslash of filepath
-    if out_folder_path[-1] == "\\":
-        out_folder_path=out_folder_path[:-1]
-        
-    
-    out_stop = "COPY (SELECT * FROM out_stop) TO '"+out_folder_path+"\\"+agency+"_"+mode_number_as_txt+"_stop.csv' WITH CSV HEADER"
-    
-    db = psycopg2.connect(database=in_dbname, user=in_username, password=in_password)
-    cur = db.cursor()
+def go(dbhost, in_dbname, in_username, in_password, agency, mode, outputType):
+
+    outPath = os.path.normcase('../app/static/output/')
+    outPrefix = agency + '_mode' + str(mode) + '_' + outputType
+
+    shpFileArray = (
+        outPrefix + '.dbf',
+        outPrefix + '.prj',
+        outPrefix + '.shp',
+        outPrefix + '.shx')
+
+    if outputType == 'stop':
+        db_table = 'out_stop'
+    # else:
+        # db_table = 'out_route' -- ADD ROUTE OPTION!!!
+
+    if os.name == 'nt':
+        converter = 'pgsql2shp.exe'
+    else:
+        converter = 'pgsql2shp'
+
     try:
-        cur.execute(out_stop)
-        print "  Generated output file in "+out_folder_path
+        subprocess.check_output([converter, '-f', os.path.join(outPath, outPrefix),
+            '-h', dbhost, '-u', in_username, '-P', in_password,
+            in_dbname, db_table])
+        archiveFiles(outPath, outPrefix, shpFileArray)
+        # modify to archive folder with name=uuid containing route and stop files!!!
+        cleanUp(outPath, shpFileArray)
+        print 'Export complete!'
     except:
-        print " !ERROR: Did not generate output file."
-        print out_stop
-    print "  Completed export."
-    
-    
-    db.commit()
-    db.close()
+        print 'Export failed!'
+
+def archiveFiles(outPath, outPrefix, shpFileArray):
+    with zipfile.ZipFile(os.path.join(outPath, outPrefix) + '.zip', 'w') as f:
+        for file in shpFileArray:
+            f.write(os.path.join(outPath, file), file)
+
+def cleanUp(outPath, shpFileArray):
+    for file in shpFileArray:
+        os.remove(os.path.join(outPath, file))

@@ -31,7 +31,7 @@ import date_svc_id_select
 from sys import argv
 
 # for out_folder_path on a windows machine, go to "c:\\tmp\\"
-def go(gtfs_filename, in_dbname, in_username, in_password, out_folder_path):
+def go(gtfs_filename, dbhost, in_dbname, in_username, in_password):
     local_start=time.time()
     print "----------------------------------"
     print "Running GTFS Reader for "+gtfs_filename
@@ -45,9 +45,9 @@ def go(gtfs_filename, in_dbname, in_username, in_password, out_folder_path):
 
         for agency in agencies:
             modenums = get_modes.go(in_dbname, in_username, in_password, agency)
-            for num in modenums:
-                calculate_metrics.go(in_dbname, in_username, in_password, agency, num)
-                output_files.go(in_dbname, in_username, in_password, out_folder_path, gtfs_filename, num, agency)
+            for mode in modenums:
+                calculate_metrics.go(in_dbname, in_username, in_password, agency, mode)
+                output_files.go(dbhost, in_dbname, in_username, in_password, agency, mode, 'stop')
         print "GTFS Reader completed."
     else:
         print " !ERROR: Calendar date issue - program terminated."

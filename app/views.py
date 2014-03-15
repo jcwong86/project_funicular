@@ -6,17 +6,17 @@ import urllib, uuid
 @app.route('/')
 @app.route('/index')
 def index():
-	agency_id = request.args.get('agency')
-	agency_info = None
-	if agency_id != None:
-		agency_url = 'http://www.gtfs-data-exchange.com/api/agency?agency=' + agency_id
-		agency_info = json.load(urllib.urlopen(agency_url))
-		title = agency_info['data']['agency']['name']
-	else:
-		title = 'Home'
+	return render_template('index.html',
+		title = 'Home')
+
+@app.route('/agency/<agency_id>')
+def agency(agency_id):
+	agency_url = 'http://www.gtfs-data-exchange.com/api/agency?agency=' + agency_id
+	agency_info = json.load(urllib.urlopen(agency_url))
+	agency_name = agency_info['data']['agency']['name']
 	return render_template('index.html',
 		active_agency = agency_info,
-		title = title)
+		title = agency_name)
 
 @app.route('/get_agencies')
 def get_agencies():

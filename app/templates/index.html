@@ -9,21 +9,18 @@
 <div class="page-header">
 	<h3>Select an agency</h3>
 </div>
-<form class="form-inline" role="form" action="{{url_for('index')}}">
+<form class="form-inline" role="form">
 	<div class="form-group">
 		<select class="form-control" id="state-select">
-			<option value="" selected disabled>select a state</option>
+			<option value="" selected disabled>select state</option>
 		</select>
 	</div>
 	<div class="form-group">
 		<select name="agency" class="form-control" id="agency-select" required>
-			<option value="" selected disabled>select an agency</option>
-			<!-- {% for agency in agencies %}
-			<option value="{{agency.dataexchange_id}}">{{agency.name}}</option>
-			{% endfor %} -->
+			<option value="" selected disabled>select agency</option>
 		</select>
 	</div>
-	<button type="submit" id="submit" class="btn btn-primary">Go!</button>
+	<button type="button" id="submit" class="btn btn-primary">Go!</button>
 </form>
 <div class="GTFS-table-container">
 	{% if active_agency %}

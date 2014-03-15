@@ -128,6 +128,8 @@ $(document).ready(function() {
 		if($('#agency-select')[0].value === "") {
 			addAlert('danger', true, 'Error: no agency selected.');
 			$('#agency-select').focus();
+		} else {
+			window.location = '/agency/' + $('#agency-select')[0].value;
 		}
 	});
 	$("#state-select").change(function() {

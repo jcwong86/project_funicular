@@ -23,7 +23,7 @@ function fillStateSelect() {
 	}
 	stateList.sort();
 	for(i = 0; i < stateList.length; i++) {
-		$("#state-select").append('<option value="' + stateList[i] + '">' +
+		$('#state-select').append('<option value="' + stateList[i] + '">' +
 				stateList[i] + '</option>');
 	}
 };
@@ -43,7 +43,7 @@ function fillAgencySelect(state) {
 	}
 	agencyList.sort();
 	for(i = 0; i < agencyList.length; i++) {
-		$("#agency-select").append('<option value="' + agencyList[i][0] + '">' +
+		$('#agency-select').append('<option value="' + agencyList[i][0] + '">' +
 				agencyList[i][1] + '</option>');
 	}
 };
@@ -52,9 +52,9 @@ function confirmGTFSSelection(description, date_added, user, fileURL) {
 	var GTFS_description_full = description + ', added by ' + user + ' ' + 
 		moment.unix(date_added).calendar() + '.';
 	$('.GTFS-description').text(GTFS_description_full);
-	$("#modal1").modal('show')
-	$("#confirm").unbind("click");
-	$("#confirm").click(function() {
+	$('#modal1').modal('show');
+	$('#confirm').unbind('click');
+	$('#confirm').click(function() {
         submitRequest($('#email-input')[0].value, GTFS_description_full, fileURL);
     });
 };
@@ -64,7 +64,7 @@ function submitRequest(email, GTFS_description, fileURL) {
 	if(!valid_email) {
 		alert('Please enter a valid email address'); //change this from an alert to an on-page notification?
 	} else {
-		$("#modal1").modal('hide')
+		$('#modal1').modal('hide')
 		url = '/process_selection';
 		$.ajax({
 	        url: url,
@@ -125,16 +125,22 @@ $(document).ready(function() {
 			the desired GTFS update.");
 	}
 	$('#submit').click(function(){
-		if($('#agency-select')[0].value === "") {
+		if($('#agency-select')[0].value === '') {
 			addAlert('danger', true, 'Error: no agency selected.');
 			$('#agency-select').focus();
 		} else {
 			window.location = '/agency/' + $('#agency-select')[0].value;
 		}
 	});
-	$("#state-select").change(function() {
-		$("#agency-select").find('option:not(:first)').remove();
+	$('#state-select').change(function() {
+		$('#agency-select').find('option:not(:first)').remove();
 		fillAgencySelect($('#state-select')[0].value);
-   		$("#agency-select").focus();
+   		$('#agency-select').focus();
+  	});
+  	$('#modal1').on('shown.bs.modal', function() {
+  		$('#email-input').focus();
+  	});
+  	$('#modal2').on('shown.bs.modal', function() {
+  		$('#close-modal2').focus();
   	});
 });

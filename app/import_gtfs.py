@@ -40,6 +40,8 @@ import string
 import psycopg2
 import sys
 import re
+import urllib
+from StringIO import StringIO
 
 ## SQL to modify the tables into appropriate view
 
@@ -204,7 +206,7 @@ def spatiallyEnable():
     except:
         print "\n !ERROR: Spatial enabling failed!"
 
-def go(gtfs_filename, in_dbname, in_username, in_password):
+def go(gtfs_url, in_dbname, in_username, in_password):
     "Import a zipped gtfs file from a folder at the same hierarchy called gtfs_data \
     and connect to a pgSQL database with specified parameters."
     
@@ -217,14 +219,17 @@ def go(gtfs_filename, in_dbname, in_username, in_password):
     dbname = in_dbname
     username = in_username
     password = in_password
-    path = os.path.normcase("../gtfs_feeds/" + gtfs_filename)
+    #path = os.path.normcase("../gtfs_feeds/" + gtfs_filename)
+
+    gtfs_data = urllib.urlopen(gtfs_url)
+    gtfs_feed = StringIO(gtfs_data.read())
 
     print "----------------------------------"
     print "Starting import_gtfs."
     # print dbname, username, password, path
     local_start=time.time()    
-    insertData(path)
+    insertData(gtfs_feed)
     spatiallyEnable()
-    print "  Completed ",gtfs_filename, " in ", int(time.time()-local_start)," seconds"
+    print "  Completed ",gtfs_url, " in ", int(time.time()-local_start)," seconds"
     
     return True

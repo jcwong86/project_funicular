@@ -31,12 +31,12 @@ import date_svc_id_select
 from sys import argv
 
 # for out_folder_path on a windows machine, go to "c:\\tmp\\"
-def go(gtfs_filename, dbhost, in_dbname, in_username, in_password):
+def go(gtfs_url, dbhost, in_dbname, in_username, in_password):
     local_start=time.time()
     print "----------------------------------"
-    print "Running GTFS Reader for "+gtfs_filename
+    print "Running GTFS Reader for "+gtfs_url
 
-    if import_gtfs.go(gtfs_filename, in_dbname, in_username, in_password):
+    if import_gtfs.go(gtfs_url, in_dbname, in_username, in_password):
         prep_tables.go(in_dbname, in_username, in_password)
         date_svc_id_select.go(in_dbname, in_username, in_password)
 

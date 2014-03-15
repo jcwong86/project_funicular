@@ -2,7 +2,7 @@ import os, subprocess, zipfile
 
 def go(dbhost, in_dbname, in_username, in_password, agency, mode, outputType):
 
-    outPath = os.path.normcase('../app/static/output/')
+    outPath = os.path.normcase('static/output/')
     outPrefix = agency + '_mode' + str(mode) + '_' + outputType
 
     shpFileArray = (

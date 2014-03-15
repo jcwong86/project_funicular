@@ -8,12 +8,6 @@ import urllib, uuid
 def index():
 	agency_id = request.args.get('agency')
 	agency_info = None
-	get_agencies_url = 'http://www.gtfs-data-exchange.com/api/agencies'
-	agencies_all = json.load(urllib.urlopen(get_agencies_url))
-	agencies_us_official = []
-	for agency in agencies_all['data']:
-		if agency['is_official'] == True and agency['country'] == 'United States':
-			agencies_us_official.append(agency)
 	if agency_id != None:
 		agency_url = 'http://www.gtfs-data-exchange.com/api/agency?agency=' + agency_id
 		agency_info = json.load(urllib.urlopen(agency_url))
@@ -21,15 +15,24 @@ def index():
 	else:
 		title = 'Home'
 	return render_template('index.html',
-		agencies = agencies_us_official,
 		active_agency = agency_info,
 		title = title)
 
-@app.route('/get_agency_info/<agency_id>', methods = ['POST'])
-def get_agency_info(agency_id):
-	url = 'http://www.gtfs-data-exchange.com/api/agency?agency=' + agency_id
-	agency_info = json.load(urllib.urlopen(url))
-	return jsonify(agency_info)
+@app.route('/get_agencies')
+def get_agencies():
+	url = 'http://www.gtfs-data-exchange.com/api/agencies'
+	agencies_all = json.load(urllib.urlopen(url))
+	agencies_us_official = []
+	for agency in agencies_all['data']:
+		if agency['is_official'] == True and \
+			agency['country'] == 'United States' and \
+			agency['state'] != "":
+			agencies_us_official.append(agency)
+	data = {
+		'status': 'OK',
+		'data': agencies_us_official
+	}
+	return jsonify(data)
 
 @app.route('/process_selection', methods = ['POST'])
 def process_selection():

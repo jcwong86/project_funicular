@@ -11,11 +11,16 @@
 </div>
 <form class="form-inline" role="form" action="{{url_for('index')}}">
 	<div class="form-group">
+		<select class="form-control" id="state-select">
+			<option value="" selected disabled>select a state</option>
+		</select>
+	</div>
+	<div class="form-group">
 		<select name="agency" class="form-control" id="agency-select" required>
-			<option value"" selected disabled>select an agency</option>
-			{% for agency in agencies %}
+			<option value="" selected disabled>select an agency</option>
+			<!-- {% for agency in agencies %}
 			<option value="{{agency.dataexchange_id}}">{{agency.name}}</option>
-			{% endfor %}
+			{% endfor %} -->
 		</select>
 	</div>
 	<button type="submit" id="submit" class="btn btn-primary">Go!</button>
@@ -123,13 +128,14 @@
 
 {% block script_content %}
 <script>
+	var agency_info_url = '{{url_for('get_agencies')}}'
+	getAgencies(agency_info_url);
 	{% if active_agency %}
-	$('#agency-select')[0].value = '{{active_agency.data.agency.dataexchange_id}}';
+	var active_agency = true
+	var active_agency_id =  '{{active_agency.data.agency.dataexchange_id}}';
+	var active_agency_state = '{{active_agency.data.agency.state}}';
 	{% else %}
-	$('#agency-select')[0].focus();
-	addAlert('info', true, "Welcome to funicular! In case you're new here, \
-		you can get started by selecting an agency below, then clicking on \
-		the desired GTFS update.");
+	var active_agency = false
 	{% endif %}
 </script>
 {% endblock %}

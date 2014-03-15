@@ -1,3 +1,53 @@
+var agency_json;
+
+function getAgencies(url) {
+	url = url;
+    $.ajax({
+        url: url,
+        type: 'GET',
+        async: false
+    }).done(function(json) {
+        agency_json = json;
+        fillStateSelect();
+    }).fail(function() {
+        console.log("Agency info retrieval failed!");
+    });
+};
+
+function fillStateSelect() {
+	stateList = [];
+	for (i = 0; i < agency_json.data.length; i++) {
+		if(stateList.indexOf(agency_json.data[i].state) === -1) {
+			stateList.push(agency_json.data[i].state);
+		}
+	}
+	stateList.sort();
+	for(i = 0; i < stateList.length; i++) {
+		$("#state-select").append('<option value="' + stateList[i] + '">' +
+				stateList[i] + '</option>');
+	}
+};
+
+function fillAgencySelect(state) {
+	agencyList = [];
+	for (i = 0; i < agency_json.data.length; i++) {
+		if (state === 'all') {
+			agencyList.push([agency_json.data[i].dataexchange_id,
+				agency_json.data[i].name]);
+		} else {
+			if (agency_json.data[i].state === state) {
+				agencyList.push([agency_json.data[i].dataexchange_id,
+					agency_json.data[i].name]);
+			}
+		}
+	}
+	agencyList.sort();
+	for(i = 0; i < agencyList.length; i++) {
+		$("#agency-select").append('<option value="' + agencyList[i][0] + '">' +
+				agencyList[i][1] + '</option>');
+	}
+};
+
 function confirmGTFSSelection(description, date_added, user, fileURL) {
 	var GTFS_description_full = description + ', added by ' + user + ' ' + 
 		moment.unix(date_added).calendar() + '.';
@@ -59,3 +109,30 @@ function addAlert(type, dismissable, message) {
 	string = string.replace(/%MESSAGE%/, message);
 	$('.flash-container').append(string);
 };
+
+$(document).ready(function() {
+	if(active_agency) {
+		fillAgencySelect(active_agency_state);
+		$('#state-select')[0].value = active_agency_state;
+		$('#agency-select')[0].value = active_agency_id;
+	} else {
+		fillAgencySelect('all');
+		$('#state-select')[0].value = '';
+		$('#agency-select')[0].value = '';
+		$('#state-select')[0].focus();
+		addAlert('info', true, "Welcome to funicular! In case you're new here, \
+			you can get started by selecting an agency below, then clicking on \
+			the desired GTFS update.");
+	}
+	$('#submit').click(function(){
+		if($('#agency-select')[0].value === "") {
+			addAlert('danger', true, 'Error: no agency selected.');
+			$('#agency-select').focus();
+		}
+	});
+	$("#state-select").change(function() {
+		$("#agency-select").find('option:not(:first)').remove();
+		fillAgencySelect($('#state-select')[0].value);
+   		$("#agency-select").focus();
+  	});
+});

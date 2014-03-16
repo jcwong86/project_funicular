@@ -1,6 +1,4 @@
-import csv, psycopg2
-
-def go(db,u,p):
+def go(db):
     "Returns an array of the agencies stored as text that exist in each feed."
 
     check_agencies = """
@@ -9,14 +7,13 @@ def go(db,u,p):
         """
 
     try:
-        con = psycopg2.connect(database=db, user=u, password=p)
-        cur = con.cursor()
+        cur = db.cursor()
         cur.execute(check_agencies)
         data = cur.fetchall()
         agencies=[]
         for i in data:
             agencies.append(i[0])
-        con.commit()
+        db.commit()
         print "  Checked agencies. Will run for: " + str(agencies)
         return agencies
     except Exception, e:

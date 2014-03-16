@@ -2,3 +2,4 @@ venv
 *.pyc
 localtest
 config.txt
+app/test_process.py

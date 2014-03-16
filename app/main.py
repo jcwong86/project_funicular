@@ -28,26 +28,30 @@ import get_agencies
 import time
 import math
 import date_svc_id_select
+import psycopg2
 from sys import argv
 
 # for out_folder_path on a windows machine, go to "c:\\tmp\\"
-def go(gtfs_url, dbhost, in_dbname, in_username, in_password):
+def go(gtfs_url, in_dbhost, in_dbname, in_username, in_password):
     local_start=time.time()
     print "----------------------------------"
     print "Running GTFS Reader for "+gtfs_url
 
-    if import_gtfs.go(gtfs_url, in_dbname, in_username, in_password):
-        prep_tables.go(in_dbname, in_username, in_password)
-        date_svc_id_select.go(in_dbname, in_username, in_password)
+    db = psycopg2.connect(host=in_dbhost, database=in_dbname,
+        user=in_username, password=in_password)
 
+    if import_gtfs.go(gtfs_url, db):
+        prep_tables.go(db)
+        date_svc_id_select.go(db)
 
-        agencies = get_agencies.go(in_dbname, in_username, in_password)
+        agencies = get_agencies.go(db)
 
         for agency in agencies:
-            modenums = get_modes.go(in_dbname, in_username, in_password, agency)
+            modenums = get_modes.go(db, agency)
             for mode in modenums:
-                calculate_metrics.go(in_dbname, in_username, in_password, agency, mode)
-                output_files.go(dbhost, in_dbname, in_username, in_password, agency, mode, 'stop')
+                calculate_metrics.go(db, agency, mode)
+                output_files.go(in_dbhost, in_dbname, in_username,
+                    in_password, agency, mode, 'stop')
         print "GTFS Reader completed."
     else:
         print " !ERROR: Calendar date issue - program terminated."
@@ -56,6 +60,7 @@ def go(gtfs_url, dbhost, in_dbname, in_username, in_password):
     else:
         print "Total runtime: "+ str(math.trunc((time.time()-local_start)/60)) + " min " +str(round((time.time()-local_start)%60)) +" sec."
     print "----------------------------------"
+    db.close()
 
 if __name__ == "__main__":
     go(argv[1], argv[2], argv[3], argv[4], argv[5])

@@ -1,6 +1,6 @@
-import psycopg2, time, sys
+import time, sys
 
-def go(db,u,p,agency,mode_number_as_txt):
+def go(db,agency,mode_number_as_txt):
 
     print "Starting calculate_metrics.py."
     print agency.replace('_',' ')+" - M"+mode_number_as_txt
@@ -243,12 +243,11 @@ def go(db,u,p,agency,mode_number_as_txt):
     local_start=time.time()
     for i in queries:
         try:
-            con = psycopg2.connect(database=db, user=u, password=p)
-            cur = con.cursor()
+            cur = db.cursor()
             
             try:
                 cur.execute(i)
-                con.commit()
+                db.commit()
                 print "  Executed query -", i.splitlines()[1].split()[2],""
             except Exception, e:
                 print " !ERROR: Failed query - ", i.splitlines()[1].split()[2],""
@@ -257,32 +256,28 @@ def go(db,u,p,agency,mode_number_as_txt):
                 pass
         except:
             print " !ERROR: Connection Failed."
-    con.close()
 
     try:
-        con = psycopg2.connect(database=db, user=u, password=p)
-        cur = con.cursor()
+        cur = db.cursor()
         cur.execute(qry_hrs_mi_by_day)
-        con.commit()
+        db.commit()
         print "  Executed query - qry_hrs_mi_by_day."
     except:
         print " !ERROR: Failed query - 'query_hrs_mi_by_day - attempting just hrs."
         try:
-            con = psycopg2.connect(database=db, user=u, password=p)
-            cur = con.cursor()
+
+            cur = db.cursor()
             cur.execute(qry_hrs_by_day)
-            con.commit()
+            db.commit()
             print "  Executed query - qry_hrs_by_day. Not reporting miles."
         except:
             print " !ERROR: Failed query - 'query_hrs_by_day. Output will fail."
             
     try:
-        con = psycopg2.connect(database=db, user=u, password=p)
-        cur = con.cursor()
+        cur = db.cursor()
         cur.execute(qry_ntd_out)
-        con.commit()
+        db.commit()
         print "  Executed query - NTD Output."
-        con.close()
     except:
         print " !ERROR: Failed query - NTD Output."
 

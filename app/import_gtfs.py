@@ -37,7 +37,6 @@ import csv
 import time
 import os
 import string
-import psycopg2
 import sys
 import re
 import urllib
@@ -115,7 +114,7 @@ def setupTableQuery(tablename):
     #In the future, this should be an executable query, not just print it here.
     return b
 
-def insertData(GTFSfeed):
+def insertData(GTFSfeed, db):
 
     #queries and array definitions
     file_structure = ['agency.txt', 'calendar.txt', 'calendar_dates.txt', 'fare_attributes.txt', 'fare_rules.txt', 'feed_stats', 'frequencies.txt', 'routes.txt',  'shapes.txt', 'stop_times.txt', 'stops.txt', 'transfers.txt',  'trips.txt', 'feed_info.txt']
@@ -128,8 +127,7 @@ def insertData(GTFSfeed):
 
 
     # Connect to database
-    con = psycopg2.connect(database=dbname, user=username, password=password)
-    cur = con.cursor()
+    cur = db.cursor()
     cur.execute(drop_tables)
     cur.execute(drop_views)
     local_start=time.time()
@@ -176,7 +174,7 @@ def insertData(GTFSfeed):
                 insert_statement=string.rstrip(insert_statement,",")+");"                 #Close the Insert statement
                 cur.execute(insert_statement)
     feed.close()
-    con.commit()
+    db.commit()
     local_end=time.time()
     #print "\n-Checked ",dbname, " in ", int(local_end-local_start)," sec"
     
@@ -184,7 +182,7 @@ def timeToSeconds(text):
     h,m,s = map(int,text.split(":"))
     return h*60*60 + m*60 + s
 
-def spatiallyEnable():
+def spatiallyEnable(db):
     "Runs queries that will spatially enable the stop_times and shapes files by adding geo_tablenames"
     #convert shape points to line geometries
     shapes1 = "CREATE TABLE geo_shapes AS SELECT shape_id, shape_pt_lat, shape_pt_lon,shape_pt_sequence FROM shapes;"
@@ -194,31 +192,32 @@ def spatiallyEnable():
     shapes5 = "CREATE VIEW geojson_shapes AS SELECT shape_id, ST_AsGeoJSON(ST_MakeLine(geom ORDER BY shape_pt_sequence)) As line_geom FROM geo_shapes GROUP BY shape_id;"
 
     try:
-        con = psycopg2.connect(database=dbname, user=username, password=password)
-        cur = con.cursor()
+        cur = db.cursor()
         cur.execute(shapes1)
         cur.execute(shapes2)
         cur.execute(shapes3)
         cur.execute(shapes4)
         cur.execute(shapes5)
-        con.commit()
+        db.commit()
         print "\n  Spatially enabled tables."
     except:
         print "\n !ERROR: Spatial enabling failed!"
 
-def go(gtfs_url, in_dbname, in_username, in_password):
+def go(gtfs_url, db):
     "Import a zipped gtfs file from a folder at the same hierarchy called gtfs_data \
     and connect to a pgSQL database with specified parameters."
     
-    global dbname
-    global username
-    global password
-    global path
-    global mode
+    # global dbhost
+    # global dbname
+    # global username
+    # global password
+    # global path
+    # global mode
     
-    dbname = in_dbname
-    username = in_username
-    password = in_password
+    # dbhost = in_dbhost
+    # dbname = in_dbname
+    # username = in_username
+    # password = in_password
     #path = os.path.normcase("../gtfs_feeds/" + gtfs_filename)
 
     gtfs_data = urllib.urlopen(gtfs_url)
@@ -228,8 +227,8 @@ def go(gtfs_url, in_dbname, in_username, in_password):
     print "Starting import_gtfs."
     # print dbname, username, password, path
     local_start=time.time()    
-    insertData(gtfs_feed)
-    spatiallyEnable()
+    insertData(gtfs_feed, db)
+    spatiallyEnable(db)
     print "  Completed ",gtfs_url, " in ", int(time.time()-local_start)," seconds"
     
     return True

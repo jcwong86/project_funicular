@@ -1,7 +1,6 @@
 import time
 import os
 import string
-import psycopg2
 import datetime
 
 
@@ -63,15 +62,13 @@ stop_data = """
 deleteTbls = "DROP TABLE IF EXISTS new_stop_times, geo_lines, geo_stops, trip_data, stop_data;"
 queries = [geolines,geostops,secPastMid,trip_data, stop_data]
         
-def go(db,u,p):
+def go(db):
     "Prepare tables for calculations and analysis by creating geometries linked to stop and route id's."
     print "Starting prep_tables.py."
     local_start = time.time()
     #Creates a synthetic date|svc_id table based on calendar/cal_date usage
     
-
-    con = psycopg2.connect(database=db, user=u, password=p)
-    cur = con.cursor()
+    cur = db.cursor()
     try:
         cur.execute(deleteTbls)
         print "  Executed query - deleteTbls"
@@ -85,7 +82,7 @@ def go(db,u,p):
             print " !ERROR: Failed query - ", i.splitlines()[1].split()[2],""
             print e.pgerror
     
-    con.commit()
+    db.commit()
 
     print "  Completed metrics queries in ", int(time.time()-local_start)," seconds."
 

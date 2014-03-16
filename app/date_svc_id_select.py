@@ -1,6 +1,4 @@
-import psycopg2
-
-def check_calendar_exists(db,u,p):
+def check_calendar_exists(db):
     "Checks if there is a calendar table associated with this feed. Returns True if table exists."
     print "Checking calendar files."
     qry_calendar = """
@@ -11,26 +9,24 @@ def check_calendar_exists(db,u,p):
 
 
     try:
-        con = psycopg2.connect(database=db, user=u, password=p)
-        cur = con.cursor()
+        cur = db.cursor()
         cur.execute(qry_calendar)
         out = bool(cur.rowcount)
-        con.commit()
+        db.commit()
 
         if out:
-            con = psycopg2.connect(database=db, user=u, password=p)
-            cur = con.cursor()
+            cur = db.cursor()
             cur.execute("SELECT sum(monday::int)::int FROM calendar")
             sum_mon=cur.fetchone()
             if sum_mon[0]<1:
                 return False            
-            con.commit()
+            db.commit()
         return out
     except:
         print " !ERROR: Cannot determine if calendar exists."
         return False
 
-def check_calendar_dates_exists(db,u,p):
+def check_calendar_dates_exists(db):
     "Checks if there is a calendar_dates table associated with this feed. Returns True if table exists."
 
     qry_calendar = """
@@ -41,11 +37,10 @@ def check_calendar_dates_exists(db,u,p):
 
 
     try:
-        con = psycopg2.connect(database=db, user=u, password=p)
-        cur = con.cursor()
+        cur = db.cursor()
         cur.execute(qry_calendar)
         out = bool(cur.rowcount)
-        con.commit()
+        db.commit()
         return out
     except:
         print " !ERROR: Cannot determine if calendar_dates exists."
@@ -148,44 +143,41 @@ qry_dates_svc_id_calendar = """
 
 qry_drop_tables = "DROP TABLE IF EXISTS dates_service_ids;"
 
-def go(db,u,p):
+def go(db):
     "Creates service_id and date table based on appropriate use of calendar and calendar_date files."
 
-    calendar = check_calendar_exists(db,u,p)
-    calendar_dates = check_calendar_dates_exists(db,u,p)
+    calendar = check_calendar_exists(db)
+    calendar_dates = check_calendar_dates_exists(db)
     print "  Calendar:" + str(calendar)
     print "  Calendar_date:" + str(calendar_dates)
 
     if calendar and calendar_dates:
         try:
-            con = psycopg2.connect(database=db, user=u, password=p)
-            cur = con.cursor()
+            cur = db.cursor()
             print "  Executing qry_dates_svc_id_calendar_and_calendar_dates"
             cur.execute(qry_drop_tables)
             cur.execute(qry_dates_svc_id_calendar_and_calendar_dates)
-            con.commit()
+            db.commit()
         except:
             print " !ERROR: Cannot calculate dates and service ids. Only calendar table exists."
      
     elif calendar and not calendar_dates:
         try:
-            con = psycopg2.connect(database=db, user=u, password=p)
-            cur = con.cursor()
+            cur = db.cursor()
             print "  Executing qry_dates_svc_id_calendar"
             cur.execute(qry_drop_tables)
             cur.execute(qry_dates_svc_id_calendar)
-            con.commit()
+            db.commit()
         except:
             print " !ERROR: Cannot calculate dates and service ids. Only calendar table exists."
             
     elif not calendar and calendar_dates:
         try:
-            con = psycopg2.connect(database=db, user=u, password=p)
-            cur = con.cursor()
+            cur = db.cursor()
             cur.execute(qry_drop_tables)            
             print "  Executing qry_dates_svc_id_calendar_dates"
             cur.execute(qry_dates_svc_id_calendar_dates)
-            con.commit()
+            db.commit()
         except:
             print " !ERROR: Cannot calculate dates and service ids. Only calendar table exists."
     

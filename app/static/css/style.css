@@ -24,6 +24,10 @@ body {
 .span-right {
   float: right;
 }
+.unstyled-link, .unstyled-link:hover{
+  color: inherit;
+  text-decoration: none;
+}
 .GTFS-description, .user-email{
   font-weight: bold;
 }

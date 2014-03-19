@@ -23,7 +23,7 @@
     <div class="container theme-showcase" role="main" id="body-container">
       <div class="page-header">
         {% if title %}
-        <h1>funicular &mdash; {{title}}</h1>
+        <h1><a class="unstyled-link" href="{{url_for('index')}}">funicular</a> &mdash; {{title}}</h1>
         {% else %}
         <h1>funicular</h1>
         {% endif %}

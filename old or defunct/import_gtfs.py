@@ -152,14 +152,11 @@ def insertData(GTFSfeed, db):
                 j+=1
                 k=0
                 l=0
-            
-            insert_statement = 'INSERT INTO '+string.rstrip(txtfile,'.txt')+' VALUES ('
             for row in dr:                              #For each line in the textfile
                 k+=1
-                if k%1000==0:
-                    insert_statement=string.rstrip(insert_statement,"), (")+");"                 #Close the Insert statement
-                    cur.execute(insert_statement) #use in lieu of stdout
-                    insert_statement = 'INSERT INTO '+string.rstrip(txtfile,'.txt')+' VALUES ('
+                if k%50000==0:
+                    sys.stdout.write('.')
+                insert_statement = 'INSERT INTO '+string.rstrip(txtfile,'.txt')+' VALUES ('
                 l+=1
                 for fieldname in fieldnames:            #For each intended field               
                     try:
@@ -174,10 +171,8 @@ def insertData(GTFSfeed, db):
                                                         #In the future, any switch statements for diff data types go here
                             a = row[fieldname].strip()
                             insert_statement += "'"+string.replace(a,"'","")+"',"
-                insert_statement=string.rstrip(insert_statement,",")+"), ("                 #Close the Insert statement
-            insert_statement=string.rstrip(insert_statement,"), (")+");"                 #Close the Insert statement
-            cur.execute(insert_statement) #use in lieu of stdout
-
+                insert_statement=string.rstrip(insert_statement,",")+");"                 #Close the Insert statement
+                cur.execute(insert_statement)
     feed.close()
     db.commit()
     local_end=time.time()

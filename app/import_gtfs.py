@@ -152,13 +152,18 @@ def insertData(GTFSfeed, db):
                 j+=1
                 k=0
                 l=0
-            
+
             insert_statement = 'INSERT INTO '+string.rstrip(txtfile,'.txt')+' VALUES ('
             for row in dr:                              #For each line in the textfile
                 k+=1
                 if k%1000==0:
                     insert_statement=string.rstrip(insert_statement,"), (")+");"                 #Close the Insert statement
-                    cur.execute(insert_statement) #use in lieu of stdout
+                    try:
+                        if insert_statement.rfind("VALUES)") == -1:
+                            cur.execute(insert_statement)
+                            sys.stdout.write('.')
+                    except Exception as e:
+                        print e
                     insert_statement = 'INSERT INTO '+string.rstrip(txtfile,'.txt')+' VALUES ('
                 l+=1
                 for fieldname in fieldnames:            #For each intended field               
@@ -176,7 +181,9 @@ def insertData(GTFSfeed, db):
                             insert_statement += "'"+string.replace(a,"'","")+"',"
                 insert_statement=string.rstrip(insert_statement,",")+"), ("                 #Close the Insert statement
             insert_statement=string.rstrip(insert_statement,"), (")+");"                 #Close the Insert statement
-            cur.execute(insert_statement) #use in lieu of stdout
+            if insert_statement.rfind("VALUES);") == -1:
+                cur.execute(insert_statement)
+
 
     feed.close()
     db.commit()

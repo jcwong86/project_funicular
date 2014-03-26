@@ -29,6 +29,7 @@ import time
 import math
 import date_svc_id_select
 import psycopg2
+import cleanup
 from sys import argv
 
 # for out_folder_path on a windows machine, go to "c:\\tmp\\"
@@ -55,6 +56,7 @@ def go(gtfs_url, in_dbhost, in_dbname, in_username, in_password):
         print "GTFS Reader completed."
     else:
         print " !ERROR: Calendar date issue - program terminated."
+    cleanup.go(db)
     if time.time()-local_start < 60:
         print "Total runtime < 1 min."
     else:

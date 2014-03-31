@@ -1,4 +1,4 @@
-from flask import render_template, redirect, request, url_for, flash, json, jsonify
+from flask import render_template, redirect, request, url_for, flash, json, jsonify, send_from_directory
 from app import app, main
 from emails import send_file_ready_notification
 import urllib, uuid
@@ -49,4 +49,5 @@ def process_selection():
 @app.route('/download/<unique_string>')
 def download_file(unique_string):
 	# check unique_string against database
-	return "placeholder for file download"
+	# return unique_string
+	return send_from_directory(app.static_folder, 'output/test.txt', as_attachment = True)

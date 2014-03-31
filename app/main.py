@@ -29,6 +29,7 @@ import time
 import math
 import date_svc_id_select
 import psycopg2
+import route_out
 import cleanup
 from sys import argv
 
@@ -46,7 +47,8 @@ def go(gtfs_url, in_dbhost, in_dbname, in_username, in_password):
         date_svc_id_select.go(db)
 
         agencies = get_agencies.go(db)
-
+        route_out.go(db)
+        
         for agency in agencies:
             modenums = get_modes.go(db, agency)
             for mode in modenums:

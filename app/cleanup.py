@@ -33,7 +33,16 @@ def go(db):
         stop_summary,
         out_stop,
         rev_hr_mi_by_date,
-        ntd_out CASCADE;"""
+        ntd_out,
+        q_geo_lines,
+        q_shape_lookup,
+        trip_stats,
+        trip_lengths,
+        route_stats,
+        route_stats_sat,
+        route_stats_sun,
+        route_stats_wkdy,
+        route_stats_gen CASCADE;"""
 
 
     try:

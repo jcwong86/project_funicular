@@ -1,5 +1,11 @@
+import date_svc_id_select
+import time
+
 def go(db):
-    "Returns an array of the mode numbers stored as text that exist in each feed."
+    "Generates a table of unique route geometries and characteristics for use in shapefile creation."
+    date_svc_id_select.go(db)
+    print "Begin route calculations."
+
 
     qry_cleanup = """
     DROP TABLE IF EXISTS
@@ -222,10 +228,11 @@ def go(db):
     SELECT 
         line_geom,
         route_id,
-        route_short_name,
-        route_long_name,
-        trip_headsign,
-        direction_id,
+        route_type,
+        route_stats_gen.route_short_name as rt_sname,
+        route_stats_gen.route_long_name as rt_lname,
+        trip_headsign as t_headsign,
+        direction_id as dir_id,
         q_shape_id,
         maxtripdur,
         mintripdur,
@@ -245,10 +252,12 @@ def go(db):
         JOIN route_stats_sat USING(route_id, route_short_name, route_long_name, trip_headsign, direction_id, q_shape_id)
         JOIN route_stats_sun USING(route_id, route_short_name, route_long_name, trip_headsign, direction_id, q_shape_id)    
         JOIN route_stats_wkdy USING(route_id, route_short_name, route_long_name, trip_headsign, direction_id, q_shape_id)
-        JOIN q_geo_lines USING (q_shape_id);"""
+        JOIN q_geo_lines USING (q_shape_id)
+        JOIN routes USING (route_id);"""
     
     queries = [qry_cleanup,qry_unique_lines,qry_update_unique_lines,qry_unique_lines_lookup,qry_dow,qry_trip_stats,qry_trip_lengths,qry_route_stats_gen,qry_route_stats_sat,qry_route_stats_sun,qry_route_stats_wkdy,qry_route_stats]
 
+    local_start=time.time()
     for query in queries:    
         try:
             cur = db.cursor()
@@ -256,6 +265,10 @@ def go(db):
             db.commit()
             print "  Query executed."
         except Exception, e:
-            print " !ERROR: Failed a query - See below."
+            print " !ERROR: Failed a query - See description below."
             print e
+            print " !Stopping script. Reset the db connection to continue using it. db.reset()"
+            break
+    print "  Completed route_outs queries in ", int(time.time()-local_start)," seconds."
+
             

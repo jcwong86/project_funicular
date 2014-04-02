@@ -1,3 +1,5 @@
+import time
+
 def check_calendar_exists(db):
     "Checks if there is a calendar table associated with this feed. Returns True if table exists."
     print "Checking calendar files."
@@ -22,8 +24,9 @@ def check_calendar_exists(db):
                 return False            
             db.commit()
         return out
-    except:
+    except Exception, e:
         print " !ERROR: Cannot determine if calendar exists."
+        print e
         return False
 
 def check_calendar_dates_exists(db):

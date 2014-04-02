@@ -30,11 +30,12 @@ import math
 import date_svc_id_select
 import psycopg2
 import route_out
+import stops_out
 import cleanup
 from sys import argv
 
 # for out_folder_path on a windows machine, go to "c:\\tmp\\"
-def go(gtfs_url, in_dbhost, in_dbname, in_username, in_password):
+def go(gtfs_url, in_dbhost, in_dbname, in_username, in_password, short_agency_name_no_spaces):
     local_start=time.time()
     print "----------------------------------"
     print "Running GTFS Reader for "+gtfs_url
@@ -44,20 +45,18 @@ def go(gtfs_url, in_dbhost, in_dbname, in_username, in_password):
 
     if import_gtfs.go(gtfs_url, db):
         prep_tables.go(db)
-        date_svc_id_select.go(db)
-
-        agencies = get_agencies.go(db)
         route_out.go(db)
+        stops_out.go(db)
         
-        for agency in agencies:
-            modenums = get_modes.go(db, agency)
-            for mode in modenums:
-                calculate_metrics.go(db, agency, mode)
-                output_files.go(in_dbhost, in_dbname, in_username,
-                    in_password, agency, mode, 'stop')
+        modenums = get_modes.go(db)
+        for mode in modenums:
+            output_files.go(in_dbhost, in_dbname, in_username,
+                in_password, mode, 'stop',short_agency_name_no_spaces)
+            output_files.go(in_dbhost, in_dbname, in_username,
+                in_password, mode, 'route', short_agency_name_no_spaces)
         print "GTFS Reader completed."
     else:
-        print " !ERROR: Calendar date issue - program terminated."
+        print "!!ERROR: Import problem - program terminated."
     cleanup.go(db)
     if time.time()-local_start < 60:
         print "Total runtime < 1 min."

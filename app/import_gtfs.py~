@@ -121,6 +121,7 @@ def insertData(GTFSfeed, db):
     
     drop_tables="DROP TABLE IF EXISTS agency, calendar, calendar_dates, fare_attributes, fare_rules, frequencies, routes, shapes, stop_times, stops, transfers, trips, feed_info, geo_shapes, geo_stop_times, trips_per_stop, stop_level_avg_hdwy, rte_svc_span, rte_hdwy, rte_hrs_svc, rte_trips_day, geo_lines, geo_stops, trip_speeds, rte_speeds, temp1, rte_dist_bw_stops, out_stop, out_route,new_stop_times CASCADE;"
     
+    drop_views="DROP VIEW IF EXISTS geojson_shapes CASCADE;"
     
     #convert departure times to seconds past midnight
 
@@ -128,6 +129,7 @@ def insertData(GTFSfeed, db):
     # Connect to database
     cur = db.cursor()
     cur.execute(drop_tables)
+    cur.execute(drop_views)
     local_start=time.time()
     feed = zipfile.ZipFile(GTFSfeed)
     
@@ -161,7 +163,6 @@ def insertData(GTFSfeed, db):
                             cur.execute(insert_statement)
                     except Exception as e:
                         print e
-                    
                     insert_statement = 'INSERT INTO '+string.rstrip(txtfile,'.txt')+' VALUES ('
                 l+=1
                 for fieldname in fieldnames:            #For each intended field               

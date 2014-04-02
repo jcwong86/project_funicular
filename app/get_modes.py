@@ -1,13 +1,11 @@
-def go(db, agency):
+def go(db):
     "Returns an array of the mode numbers stored as text that exist in each feed."
 
     check_modes = """
         SELECT DISTINCT route_type as mode_num
-        FROM routes, agency
-        WHERE agency.agency_id=routes.agency_id AND
-            replace(agency_name,' ','_') = '%s'
+        FROM routes
         ORDER BY mode_num ASC;
-    """ %agency
+    """ 
 
     try:
         cur = db.cursor()

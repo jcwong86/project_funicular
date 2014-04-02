@@ -1,0 +1,257 @@
+bart ='http://gtfs.s3.amazonaws.com/bart-archiver_20140109_0110.zip'
+mta = 'http://gtfs.s3.amazonaws.com/mta-new-york-city-transit_20140205_0118.zip'
+wmata = 'http://gtfs.s3.amazonaws.com/wmata-archiver_20140311_0101.zip'
+art = 'http://gtfs.s3.amazonaws.com/arlington-transit_20131014_0431.zip'
+
+
+
+DROP TABLE IF EXISTS
+	q_geo_lines,
+	q_shape_lookup,
+	trip_stats,
+	trip_length,
+	route_stats,
+	route_stats_sat,
+	route_stats_sun,
+	route_stats_wkdy,
+	route_stats_gen;
+
+------------------------------
+
+CREATE TABLE q_geo_lines(
+	line_geom GEOMETRY,
+	q_shape_id SERIAL);
+
+------------------------------
+
+INSERT INTO q_geo_lines 
+(SELECT DISTINCT line_geom 
+FROM geo_lines);
+
+------------------------------
+
+CREATE TABLE q_shape_lookup AS (
+	SELECT
+		shape_id,
+		q_shape_id
+	FROM
+		geo_lines JOIN q_geo_lines USING (line_geom));
+-----------------------------------------
+
+ALTER TABLE dates_service_ids ADD dow INTEGER;
+
+------------------------------
+
+UPDATE dates_service_ids
+SET dow = EXTRACT (dow FROM to_date(dategen::varchar,'YYYYMMDD'));
+
+------------------------------
+
+CREATE TABLE trip_stats AS
+SELECT	
+	trip_id,
+	service_id,
+	route_id,
+	route_short_name,
+	route_long_name,
+	trip_headsign,
+	direction_id,
+	q_shape_id,
+	first_departure,
+	last_arrival,
+	trip_duration_min,
+	num_stops
+FROM
+	trips 
+	JOIN q_shape_lookup USING (shape_id) 
+	JOIN routes USING (route_id) 
+	JOIN (
+		SELECT
+			trip_id,
+			min(d_sec_past_mid) AS first_departure,
+			max(a_sec_past_mid) AS last_arrival,
+			(max(a_sec_past_mid)-min(d_sec_past_mid))/60::float AS trip_duration_min,
+			count(DISTINCT stop_id) AS num_stops
+		FROM
+			new_stop_times 
+		GROUP BY
+			trip_id 
+		ORDER BY
+			trip_id ASC) a USING (trip_id);
+
+-----------------------------------------
+
+CREATE TABLE trip_lengths AS
+SELECT	trip_id,
+	ST_LENGTH(line_geom,true)*0.000621371 AS trip_length_mi
+FROM
+	trips JOIN geo_lines USING (shape_id);
+
+------------------------------
+
+------------------------------
+
+CREATE TABLE route_stats_gen AS
+SELECT
+	route_id,
+	route_short_name,
+	route_long_name,
+	trip_headsign,
+	direction_id,
+	q_shape_id,
+	MAX(trip_duration_min) as MAXTRIPDUR,
+	MIN(trip_duration_min) as MINTRIPDUR,
+	AVG(num_stops) as TYPNSTOPS,
+	AVG(trip_length_mi) as TYPTRIPLEN
+FROM
+	trip_stats JOIN trip_lengths USING (trip_id)
+GROUP BY
+	route_id,
+	route_short_name,
+	route_long_name,
+	trip_headsign,
+	direction_id,
+	q_shape_id
+ORDER BY route_id, route_short_name, direction_id;
+
+------------------------------
+
+CREATE TABLE route_stats_sat AS
+SELECT
+	route_id,
+	route_short_name,
+	route_long_name,
+	trip_headsign,
+	direction_id,
+	q_shape_id,
+	MIN(first_departure) AS FRSTTRIPSA,
+	MAX(last_arrival) AS LASTTRIPSA,
+	COUNT(trip_id) AS NTRIPS_SA
+FROM
+	trip_stats
+WHERE	
+	trip_id IN(
+		SELECT 
+			trip_id
+		FROM 
+			trips
+		WHERE	
+			service_id IN(
+				SELECT 
+					DISTINCT service_id
+				FROM
+					dates_service_ids
+				WHERE
+					dategen IN (SELECT MIN(dategen) FROM dates_service_ids WHERE dow='6')))
+GROUP BY
+	route_id,
+	route_short_name,
+	route_long_name,
+	trip_headsign,
+	direction_id,
+	q_shape_id;
+
+------------------------------
+
+CREATE TABLE route_stats_sun AS
+SELECT
+	route_id,
+	route_short_name,
+	route_long_name,
+	trip_headsign,
+	direction_id,
+	q_shape_id,
+	MIN(first_departure) AS FRSTTRIPSU,
+	MAX(last_arrival) AS LASTTRIPSU,
+	COUNT(trip_id) AS NTRIPS_SU
+FROM
+	trip_stats
+WHERE	
+	trip_id IN(
+		SELECT 
+			trip_id
+		FROM 
+			trips
+		WHERE	
+			service_id IN(
+				SELECT 
+					DISTINCT service_id
+				FROM
+					dates_service_ids
+				WHERE
+					dategen IN (SELECT MIN(dategen) FROM dates_service_ids WHERE dow='0')))
+GROUP BY
+	route_id,
+	route_short_name,
+	route_long_name,
+	trip_headsign,
+	direction_id,
+	q_shape_id;
+
+------------------------------
+
+CREATE TABLE route_stats_wkdy AS
+SELECT
+	route_id,
+	route_short_name,
+	route_long_name,
+	trip_headsign,
+	direction_id,
+	q_shape_id,
+	MIN(first_departure) AS FRSTTRIPWK,
+	MAX(last_arrival) AS LASTTRIPWK,
+	COUNT(trip_id) AS NTRIPS_WK
+FROM
+	trip_stats
+WHERE	
+	trip_id IN(
+		SELECT 
+			trip_id
+		FROM 
+			trips
+		WHERE	
+			service_id IN(
+				SELECT 
+					DISTINCT service_id
+				FROM
+					dates_service_ids
+				WHERE
+					dategen IN (SELECT MIN(dategen) FROM dates_service_ids WHERE dow='2')))
+GROUP BY
+	route_id,
+	route_short_name,
+	route_long_name,
+	trip_headsign,
+	direction_id,
+	q_shape_id;
+
+------------------------------
+
+CREATE TABLE route_stats AS
+SELECT 
+	line_geom,
+	route_id,
+	route_short_name,
+	route_long_name,
+	trip_headsign,
+	direction_id,
+	q_shape_id,
+	maxtripdur,
+	mintripdur,
+	typnstops,
+	typtriplen,
+	frsttripsa,
+	lasttripsa,
+	ntrips_sa,
+	frsttripsu,
+	lasttripsu,
+	ntrips_su,
+	frsttripwk,
+	lasttripwk,
+	ntrips_wk
+FROM 
+	route_stats_gen
+	JOIN route_stats_sat USING(route_id, route_short_name, route_long_name, trip_headsign, direction_id, q_shape_id)
+	JOIN route_stats_sun USING(route_id, route_short_name, route_long_name, trip_headsign, direction_id, q_shape_id)	
+	JOIN route_stats_wkdy USING(route_id, route_short_name, route_long_name, trip_headsign, direction_id, q_shape_id)
+	JOIN q_geo_lines USING (q_shape_id);

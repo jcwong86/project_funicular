@@ -1,5 +1,6 @@
 venv
 *.pyc
+*.zip
 localtest
 config.txt
 app/test_process.py

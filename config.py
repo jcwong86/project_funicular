@@ -1,3 +1,5 @@
+import os
+
 # security settings
 CSRF_ENABLED = True
 SECRET_KEY = 'secret-key'
@@ -13,3 +15,6 @@ APP_EMAIL_ADDRESS = 'app_email_address'
 
 # administrator settings
 ADMINS = ['admin1_email', 'admin2_email']
+
+# database information
+SQLALCHEMY_DATABASE_URI = os.environ['DATABASE_URL']

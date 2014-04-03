@@ -1,6 +1,6 @@
 import os, subprocess, zipfile, psycopg2
 
-def go(dbhost, in_dbname, in_username, in_password, mode, outputType, agency):
+def go(dbhost, in_dbname, in_username, in_password, mode, outputType, agency, folder_name):
 
     if mode == '0':
         mode_name = 'LTRail'
@@ -21,15 +21,8 @@ def go(dbhost, in_dbname, in_username, in_password, mode, outputType, agency):
     else:
         mode_name = "unknown_mode"
 
-
-    outPath = os.path.normcase('static/output/')
+    outPath = os.path.normcase('static/output/' + folder_name + '/')
     outPrefix = agency + '_' + str(mode_name) + '_' + outputType
-
-    shpFileArray = (
-        outPrefix + '.dbf',
-        outPrefix + '.prj',
-        outPrefix + '.shp',
-        outPrefix + '.shx')
 
     if outputType == 'stop':
         db_table = 'out_stop'
@@ -40,9 +33,6 @@ def go(dbhost, in_dbname, in_username, in_password, mode, outputType, agency):
         converter = 'pgsql2shp.exe'
     else:
         converter = 'pgsql2shp'
-    
-
-
 
     db=psycopg2.connect(host=dbhost, database=in_dbname, user=in_username, password=in_password)
 
@@ -68,9 +58,7 @@ def go(dbhost, in_dbname, in_username, in_password, mode, outputType, agency):
                     subprocess.check_output([converter, '-f', os.path.join(outPath, outPrefix),
                         '-h', dbhost, '-u', in_username, '-P', in_password,
                         in_dbname, 'shp_out'])
-                    archiveFiles(outPath, outPrefix, shpFileArray)
-                    # modify to archive folder with name=uuid containing route and stop files!!!
-                    cleanUp(outPath, shpFileArray)
+                    print "  Successfully exported %s" %outPrefix
                 except:
                     print ' !Export failed main loop.'
             else:
@@ -81,22 +69,8 @@ def go(dbhost, in_dbname, in_username, in_password, mode, outputType, agency):
     except Exception, e:
         print " !ERROR: Output error. Will not be able to export shpfile."
         print e
-        
-
-
 
     cur = db.cursor()
     cur.execute("DROP VIEW IF EXISTS shp_out;")
     db.commit()
-
-
-
-def archiveFiles(outPath, outPrefix, shpFileArray):
-    with zipfile.ZipFile(os.path.join(outPath, outPrefix) + '.zip', 'w') as f:
-        for file in shpFileArray:
-            f.write(os.path.join(outPath, file), file)
-        print "  Successfully exported %s" %outPrefix
-
-def cleanUp(outPath, shpFileArray):
-    for file in shpFileArray:
-        os.remove(os.path.join(outPath, file))
+    

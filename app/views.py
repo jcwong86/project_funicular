@@ -1,6 +1,7 @@
 from flask import render_template, redirect, request, url_for, flash, json, jsonify, send_from_directory
-from app import app, main
+from app import app, main, db
 from emails import send_file_ready_notification
+from models import Request
 import urllib, uuid
 
 @app.route('/')
@@ -38,10 +39,13 @@ def get_agencies():
 def process_selection():
 	# check if user is allowed to submit
 	email = request.form['email']
+	GTFS_url = request.form['fileURL']
 	GTFS_description = request.form['GTFS_description']
 	fileURL = request.form['fileURL']
 	unique_string = str(uuid.uuid4())
-	# add submission record to database
+	r = Request(GTFS_url, GTFS_description, email, unique_string)
+	db.session.add(r)
+	db.session.commit()
 	# process GTFS data!!!
 	send_file_ready_notification(email, GTFS_description, unique_string)
 	return 'OK'

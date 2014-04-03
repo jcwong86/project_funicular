@@ -28,14 +28,15 @@ import get_agencies
 import time
 import math
 import date_svc_id_select
-import psycopg2
+import psycopg2, os
 import route_out
 import stops_out
 import cleanup
 from sys import argv
+from shutil import make_archive, rmtree
 
 # for out_folder_path on a windows machine, go to "c:\\tmp\\"
-def go(gtfs_url, in_dbhost, in_dbname, in_username, in_password, short_agency_name_no_spaces):
+def go(gtfs_url, in_dbhost, in_dbname, in_username, in_password, short_agency_name_no_spaces, output_folder):
     local_start=time.time()
     print "----------------------------------"
     print "Running GTFS Reader for "+gtfs_url
@@ -49,11 +50,16 @@ def go(gtfs_url, in_dbhost, in_dbname, in_username, in_password, short_agency_na
         stops_out.go(db)
         
         modenums = get_modes.go(db)
+        request_dir = 'static/output/' + output_folder
+        os.mkdir(request_dir)
         for mode in modenums:
             output_files.go(in_dbhost, in_dbname, in_username,
-                in_password, mode, 'stop',short_agency_name_no_spaces)
+                in_password, mode, 'stop', short_agency_name_no_spaces,
+                output_folder)
             output_files.go(in_dbhost, in_dbname, in_username,
-                in_password, mode, 'route', short_agency_name_no_spaces)
+                in_password, mode, 'route', short_agency_name_no_spaces,
+                output_folder)
+        archive(request_dir)
         print "GTFS Reader completed."
     else:
         print "!!ERROR: Import problem - program terminated."
@@ -65,5 +71,9 @@ def go(gtfs_url, in_dbhost, in_dbname, in_username, in_password, short_agency_na
     print "----------------------------------"
     db.close()
 
+def archive(directory):
+    make_archive(directory, 'zip', directory)
+    rmtree(directory)
+
 if __name__ == "__main__":
-    go(argv[1], argv[2], argv[3], argv[4], argv[5])
+    go(argv[1], argv[2], argv[3], argv[4], argv[5], argv[6], argv[7])

@@ -32,6 +32,7 @@ def go(db):
         veh_miles_by_svc,
         stop_summary,
         out_stop,
+        out_route,
         rev_hr_mi_by_date,
         ntd_out,
         q_geo_lines,

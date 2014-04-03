@@ -3,7 +3,7 @@ import time, sys
 def go(db):
     "Creates a table of stop geometries and characteristics that can be used for shapefile generation."
 
-    print "  Begin stop calculations."
+    print  "Begin stop calculations."
     
 
     drop_tables = """

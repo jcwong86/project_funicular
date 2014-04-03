@@ -19,6 +19,6 @@ def go(db):
         return modes
     except:
         print " !ERROR: Failed to check modes. Running all modes."
-        modes=['0','1','2','3']
+        modes=['0','1','2','3','4','5','6','7']
         return modes
         

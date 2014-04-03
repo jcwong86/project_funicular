@@ -2,6 +2,9 @@ import os, subprocess, zipfile, psycopg2
 
 def go(dbhost, in_dbname, in_username, in_password, mode, outputType, agency, folder_name):
 
+    if in_password == None:
+    in_password = ''
+
     if mode == '0':
         mode_name = 'LTRail'
     elif mode == '1':
@@ -73,4 +76,3 @@ def go(dbhost, in_dbname, in_username, in_password, mode, outputType, agency, fo
     cur = db.cursor()
     cur.execute("DROP VIEW IF EXISTS shp_out;")
     db.commit()
-    

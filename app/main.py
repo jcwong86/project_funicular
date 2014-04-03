@@ -19,30 +19,29 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-import import_gtfs
-import output_files
-import calculate_metrics
-import prep_tables
-import get_modes
-import get_agencies
-import time
-import math
-import date_svc_id_select
-import psycopg2, os
-import route_out
-import stops_out
-import cleanup
+import import_gtfs, output_files, calculate_metrics, prep_tables, get_modes, \
+    get_agencies, date_svc_id_select, route_out, stops_out, cleanup
+import time, math, psycopg2, os, urlparse
 from sys import argv
 from shutil import make_archive, rmtree
 
-# for out_folder_path on a windows machine, go to "c:\\tmp\\"
-def go(gtfs_url, in_dbhost, in_dbname, in_username, in_password, short_agency_name_no_spaces, output_folder):
+def go(gtfs_url, short_agency_name_no_spaces, output_folder):
     local_start=time.time()
     print "----------------------------------"
     print "Running GTFS Reader for "+gtfs_url
 
-    db = psycopg2.connect(host=in_dbhost, database=in_dbname,
-        user=in_username, password=in_password)
+    # db = psycopg2.connect(host=in_dbhost, database=in_dbname,
+    #     user=in_username, password=in_password)
+
+    urlparse.uses_netloc.append("postgres")
+    db_url = urlparse.urlparse(os.environ["DATABASE_URL"])
+    
+    db = psycopg2.connect(
+        database=db_url.path[1:],
+        user=db_url.username,
+        password=db_url.password,
+        host=db_url.hostname,
+        port=db_url.port)
 
     if import_gtfs.go(gtfs_url, db):
         prep_tables.go(db)
@@ -53,11 +52,11 @@ def go(gtfs_url, in_dbhost, in_dbname, in_username, in_password, short_agency_na
         request_dir = 'static/output/' + output_folder
         os.mkdir(request_dir)
         for mode in modenums:
-            output_files.go(in_dbhost, in_dbname, in_username,
-                in_password, mode, 'stop', short_agency_name_no_spaces,
+            output_files.go(db_url.hostname, db_url.path[1:], db_url.username,
+                db_url.password, mode, 'stop', short_agency_name_no_spaces,
                 output_folder)
-            output_files.go(in_dbhost, in_dbname, in_username,
-                in_password, mode, 'route', short_agency_name_no_spaces,
+            output_files.go(db_url.hostname, db_url.path[1:], db_url.username,
+                db_url.password, mode, 'route', short_agency_name_no_spaces,
                 output_folder)
         archive(request_dir)
         print "GTFS Reader completed."
@@ -67,7 +66,8 @@ def go(gtfs_url, in_dbhost, in_dbname, in_username, in_password, short_agency_na
     if time.time()-local_start < 60:
         print "Total runtime < 1 min."
     else:
-        print "Total runtime: "+ str(math.trunc((time.time()-local_start)/60)) + " min " +str(round((time.time()-local_start)%60)) +" sec."
+        print "Total runtime: "+ str(math.trunc((time.time()-local_start)/60)) + \
+            " min " +str(round((time.time()-local_start)%60)) +" sec."
     print "----------------------------------"
     db.close()
 
@@ -76,4 +76,4 @@ def archive(directory):
     rmtree(directory)
 
 if __name__ == "__main__":
-    go(argv[1], argv[2], argv[3], argv[4], argv[5], argv[6], argv[7])
+    go(argv[1], argv[2], argv[3])

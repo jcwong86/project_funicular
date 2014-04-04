@@ -24,8 +24,8 @@ def go(dbhost, in_dbname, in_username, in_password, mode, outputType, agency, fo
     else:
         mode_name = "unknown_mode"
 
-    outPath = os.path.normcase('app/static/output/' + folder_name + '/')
     outPrefix = agency + '_' + str(mode_name) + '_' + outputType
+    outPath = os.path.normcase('app/static/output/' + folder_name + '/' + outPrefix + '/')
 
     if outputType == 'stop':
         db_table = 'out_stop'
@@ -58,6 +58,7 @@ def go(dbhost, in_dbname, in_username, in_password, mode, outputType, agency, fo
 
             if non_empty:
                 try:
+                    os.mkdir(outPath)
                     subprocess.check_output([converter, '-f', os.path.join(outPath, outPrefix),
                         '-h', dbhost, '-u', in_username, '-P', in_password,
                         in_dbname, 'shp_out'])

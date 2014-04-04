@@ -28,8 +28,13 @@ class Request(db.Model):
 	def __repr__(self):
 		return '<Request %r>' % (self.id)
 
-	# def begin_processing(self):
-	# 	self.status += 1
+	def begin_processing(self):
+		self.status = 1
+		db.session.commit()
+
+	def finish_processing(self):
+		self.status = 2
+		db.session.commit()
 
 def get_queue():
 	return Request.query.filter(Request.status == 0).order_by(Request.request_time)

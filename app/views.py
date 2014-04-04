@@ -1,4 +1,5 @@
-from flask import render_template, redirect, request, url_for, flash, json, jsonify, send_from_directory
+from flask import render_template, redirect, request, url_for, flash, json, jsonify, \
+	send_from_directory, abort
 from app import app, main, db
 from emails import send_file_ready_notification
 from models import Request
@@ -47,14 +48,20 @@ def process_selection():
 	db.session.add(r)
 	db.session.commit()
 	print 'Request logged!'
+	r.begin_processing()
 	main.go(GTFS_url, agency_id, unique_string)
 	print 'Output files created!'
+	r.finish_processing()
 	send_file_ready_notification(email, GTFS_description, unique_string)
 	print 'Notification sent!'
 	return 'OK'
 
 @app.route('/download/<unique_string>')
 def download_file(unique_string):
-	# check unique_string against database
+	r = Request.query.filter_by(uuid = unique_string).first()
+	if r == None:
+		abort(404)
+	r.downloads += 1
+	db.session.commit()
 	file_path = 'output/' + unique_string + '.zip'
 	return send_from_directory(app.static_folder, file_path, as_attachment = True)

@@ -65,17 +65,19 @@ function submitRequest(email, GTFS_description, fileURL) {
 		alert('Please enter a valid email address'); //change this from an alert to an on-page notification?
 	} else {
 		$('#modal1').modal('hide')
+		$('.user-email').text(email)
+		$('#modal2').modal('show');
 		url = '/process_selection';
 		$.ajax({
 	        url: url,
 	        type: 'POST',
 	        data: {email: email,
 	        	GTFS_description: GTFS_description,
-	        	fileURL: fileURL
+	        	fileURL: fileURL,
+	        	agency_id: active_agency_id
 	        }
 	    }).done(function() {
-	    	$('.user-email').text(email)
-			$('#modal2').modal('show');
+	    	console.log('Request logged!');
 	    }).fail(function() {
 	        console.log('Request failed!');
 	    });

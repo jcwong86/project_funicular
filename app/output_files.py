@@ -3,7 +3,7 @@ import os, subprocess, zipfile, psycopg2
 def go(dbhost, in_dbname, in_username, in_password, mode, outputType, agency, folder_name):
 
     if in_password == None:
-    in_password = ''
+        in_password = ''
 
     if mode == '0':
         mode_name = 'LTRail'
@@ -24,7 +24,7 @@ def go(dbhost, in_dbname, in_username, in_password, mode, outputType, agency, fo
     else:
         mode_name = "unknown_mode"
 
-    outPath = os.path.normcase('static/output/' + folder_name + '/')
+    outPath = os.path.normcase('app/static/output/' + folder_name + '/')
     outPrefix = agency + '_' + str(mode_name) + '_' + outputType
 
     if outputType == 'stop':

@@ -49,7 +49,7 @@ def go(gtfs_url, short_agency_name_no_spaces, output_folder):
         stops_out.go(db)
         
         modenums = get_modes.go(db)
-        request_dir = 'static/output/' + output_folder
+        request_dir = 'app/static/output/' + output_folder
         os.mkdir(request_dir)
         for mode in modenums:
             output_files.go(db_url.hostname, db_url.path[1:], db_url.username,

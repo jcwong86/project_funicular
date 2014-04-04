@@ -41,17 +41,20 @@ def process_selection():
 	email = request.form['email']
 	GTFS_url = request.form['fileURL']
 	GTFS_description = request.form['GTFS_description']
-	fileURL = request.form['fileURL']
+	agency_id = request.form['agency_id']
 	unique_string = str(uuid.uuid4())
 	r = Request(GTFS_url, GTFS_description, email, unique_string)
 	db.session.add(r)
 	db.session.commit()
-	# process GTFS data!!!
+	print 'Request logged!'
+	main.go(GTFS_url, agency_id, unique_string)
+	print 'Output files created!'
 	send_file_ready_notification(email, GTFS_description, unique_string)
+	print 'Notification sent!'
 	return 'OK'
 
 @app.route('/download/<unique_string>')
 def download_file(unique_string):
 	# check unique_string against database
-	# return unique_string
-	return send_from_directory(app.static_folder, 'output/test.txt', as_attachment = True)
+	file_path = 'output/' + unique_string + '.zip'
+	return send_from_directory(app.static_folder, file_path, as_attachment = True)

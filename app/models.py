@@ -6,15 +6,17 @@ class Request(db.Model):
 	request_time = db.Column(db.DateTime)
 	gtfs_url = db.Column(db.String(240))
 	gtfs_description = db.Column(db.String(360))
+	agency_id = db.Column(db.String(120))
 	email = db.Column(db.String(120))
 	uuid = db.Column(db.String(36))
 	status = db.Column(db.Integer)
 	downloads = db.Column(db.Integer)
 
-	def __init__(self, gtfs_url, gtfs_description, email, uuid):
+	def __init__(self, gtfs_url, gtfs_description, agency_id, email, uuid):
 		self.request_time = datetime.utcnow()
 		self.gtfs_url = gtfs_url
 		self.gtfs_description = gtfs_description
+		self.agency_id = agency_id
 		self.email = email
 		self.uuid = uuid
 		self.status = 0
@@ -35,6 +37,3 @@ class Request(db.Model):
 	def finish_processing(self):
 		self.status = 2
 		db.session.commit()
-
-def get_queue():
-	return Request.query.filter(Request.status == 0).order_by(Request.request_time)

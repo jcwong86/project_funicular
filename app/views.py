@@ -1,9 +1,9 @@
 from flask import render_template, redirect, request, url_for, flash, json, jsonify, \
 	send_from_directory, abort
-from app import app, main, db
-from emails import send_file_ready_notification
+from app import app, db
 from models import Request
-import urllib, uuid
+from process_request import master_process
+import urllib, os
 
 @app.route('/')
 @app.route('/index')
@@ -43,17 +43,7 @@ def process_selection():
 	GTFS_url = request.form['fileURL']
 	GTFS_description = request.form['GTFS_description']
 	agency_id = request.form['agency_id']
-	unique_string = str(uuid.uuid4())
-	r = Request(GTFS_url, GTFS_description, email, unique_string)
-	db.session.add(r)
-	db.session.commit()
-	print 'Request logged!'
-	r.begin_processing()
-	main.go(GTFS_url, agency_id, unique_string)
-	print 'Output files created!'
-	r.finish_processing()
-	send_file_ready_notification(email, GTFS_description, unique_string)
-	print 'Notification sent!'
+	master_process(email, GTFS_url, GTFS_description, agency_id)
 	return 'OK'
 
 @app.route('/download/<unique_string>')
@@ -63,5 +53,5 @@ def download_file(unique_string):
 		abort(404)
 	r.downloads += 1
 	db.session.commit()
-	file_path = 'output/' + unique_string + '.zip'
+	file_path = os.path.normcase('output/' + unique_string + '.zip')
 	return send_from_directory(app.static_folder, file_path, as_attachment = True)

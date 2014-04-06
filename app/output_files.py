@@ -1,4 +1,5 @@
 import os, subprocess, zipfile, psycopg2
+from config import CONVERTER, OUTPUT_PATH
 
 def go(dbhost, in_dbname, in_username, in_password, mode, outputType, agency, folder_name):
 
@@ -25,17 +26,12 @@ def go(dbhost, in_dbname, in_username, in_password, mode, outputType, agency, fo
         mode_name = "unknown_mode"
 
     outPrefix = agency + '_' + str(mode_name) + '_' + outputType
-    outPath = os.path.normcase('app/static/output/' + folder_name + '/' + outPrefix + '/')
+    outPath = os.path.normcase(OUTPUT_PATH + '/' + folder_name + '/' + outPrefix + '/')
 
     if outputType == 'stop':
         db_table = 'out_stop'
     else:
         db_table = 'out_route'
-
-    if os.name == 'nt':
-        converter = 'pgsql2shp.exe'
-    else:
-        converter = 'pgsql2shp'
 
     db=psycopg2.connect(host=dbhost, database=in_dbname, user=in_username, password=in_password)
 
@@ -59,7 +55,7 @@ def go(dbhost, in_dbname, in_username, in_password, mode, outputType, agency, fo
             if non_empty:
                 try:
                     os.mkdir(outPath)
-                    subprocess.check_output([converter, '-f', os.path.join(outPath, outPrefix),
+                    subprocess.check_output([CONVERTER, '-f', os.path.join(outPath, outPrefix),
                         '-h', dbhost, '-u', in_username, '-P', in_password,
                         in_dbname, 'shp_out'])
                     print "  Successfully exported %s" %outPrefix

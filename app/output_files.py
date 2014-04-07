@@ -59,8 +59,9 @@ def go(dbhost, in_dbname, in_username, in_password, mode, outputType, agency, fo
                         '-h', dbhost, '-u', in_username, '-P', in_password,
                         in_dbname, 'shp_out'])
                     print "  Successfully exported %s" %outPrefix
-                except:
+                except Exception, e:
                     print ' !Export failed main loop.'
+                    print e
             else:
                 print " !The output table [%s]is empty. Will not generate shpfile." %db_table
         except Exception, f:

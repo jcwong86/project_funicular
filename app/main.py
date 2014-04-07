@@ -32,9 +32,6 @@ def go(gtfs_url, short_agency_name_no_spaces, output_folder):
     print "----------------------------------"
     print "Running GTFS Reader for "+gtfs_url
 
-    # db = psycopg2.connect(host=in_dbhost, database=in_dbname,
-    #     user=in_username, password=in_password)
-
     urlparse.uses_netloc.append("postgres")
     db_url = urlparse.urlparse(os.environ["DATABASE_URL"])
     

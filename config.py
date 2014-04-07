@@ -10,8 +10,8 @@ MAIL_PORT = os.environ['MAIL_PORT']
 if MAIL_SERVER != 'localhost':
 	MAIL_USERNAME = os.environ['MAIL_USERNAME']
 	MAIL_PASSWORD = os.environ['MAIL_PASSWORD']
-	MAIL_USE_TLS = os.environ['MAIL_USE_TLS']
-	MAIL_USE_SSL = os.environ['MAIL_USE_SSL']
+	MAIL_USE_TLS = False
+	MAIL_USE_SSL = True
 else:
 	MAIL_USERNAME = None
 	MAIL_PASSWORD = None

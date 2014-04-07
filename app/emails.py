@@ -16,15 +16,15 @@ def send_email(subject, sender, recipients, text_body, html_body):
 	send_async_email(msg)
 	print 'Notification sent!'
 
-def send_file_ready_notification(email, GTFS_description, unique_string):
+def send_file_ready_notification(email, GTFS_description, download_link):
 	send_email("Your funicular file is ready!",
 		APP_EMAIL_ADDRESS,
 		[email],
 		render_template('email_notification.txt',
 			email = email,
 			GTFS_description = GTFS_description,
-			unique_string = unique_string),
+			download_link = download_link),
 		render_template('email_notification.html',
 			email = email,
 			GTFS_description = GTFS_description,
-			unique_string = unique_string))
+			download_link = download_link))

@@ -1,2 +1,7 @@
 from app import app
-app.run(debug = True)
+from config import APP_DEBUG
+
+if APP_DEBUG == 'true':
+	app.run(debug = True)
+else:
+	app.run()

@@ -21,9 +21,11 @@
 
 import import_gtfs, output_files, calculate_metrics, prep_tables, get_modes, \
     get_agencies, date_svc_id_select, route_out, stops_out, cleanup
-import time, math, psycopg2, os, urlparse
+import time, math, psycopg2, os, urlparse, boto
+from datetime import datetime, timedelta
 from sys import argv
 from shutil import make_archive, rmtree
+from config import OUTPUT_PATH, S3_BUCKET
 
 def go(gtfs_url, short_agency_name_no_spaces, output_folder):
     local_start=time.time()
@@ -49,7 +51,7 @@ def go(gtfs_url, short_agency_name_no_spaces, output_folder):
         stops_out.go(db)
         
         modenums = get_modes.go(db)
-        request_dir = os.path.normcase('app/static/output/' + output_folder + '/')
+        request_dir = os.path.normcase(OUTPUT_PATH +'/' + output_folder + '/')
         os.mkdir(request_dir)
         for mode in modenums:
             output_files.go(db_url.hostname, db_url.path[1:], db_url.username,
@@ -58,7 +60,8 @@ def go(gtfs_url, short_agency_name_no_spaces, output_folder):
             output_files.go(db_url.hostname, db_url.path[1:], db_url.username,
                 db_url.password, mode, 'route', short_agency_name_no_spaces,
                 output_folder)
-        archive(request_dir)
+        zipOut = archive(request_dir)
+        download_link = move_to_S3(zipOut)
         print "GTFS Reader completed."
     else:
         print "!!ERROR: Import problem - program terminated."
@@ -70,10 +73,18 @@ def go(gtfs_url, short_agency_name_no_spaces, output_folder):
             " min " +str(round((time.time()-local_start)%60)) +" sec."
     print "----------------------------------"
     db.close()
+    return download_link
 
 def archive(directory):
     make_archive(directory, 'zip', directory)
     rmtree(directory)
+    return(directory[:-1] + '.zip')
+
+def move_to_S3(file):
+    s3_key = boto.connect_s3().get_bucket(S3_BUCKET, validate = False).new_key(os.path.basename(file))
+    s3_key.set_contents_from_filename(file)
+    os.remove(file)
+    return s3_key.generate_url(expires_in = 259200)
 
 if __name__ == "__main__":
     go(argv[1], argv[2], argv[3])

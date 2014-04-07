@@ -23,11 +23,11 @@ def process_queue():
 
 def process_next_request(req):
 	req.begin_processing()
-	main.go(req.gtfs_url, req.agency_id, req.uuid)
+	s3_link = main.go(req.gtfs_url, req.agency_id, req.uuid)
 	print 'Output files created!'
 	req.finish_processing()
 	with app.app_context():
-		send_file_ready_notification(req.email, req.gtfs_description, req.uuid)
+		send_file_ready_notification(req.email, req.gtfs_description, s3_link)
 
 def get_queue():
 	return Request.query.filter_by(status = 0).order_by(Request.request_time)
@@ -39,9 +39,3 @@ def check_for_active_request():
 	else:
 		print 'Active request exists.'
 		return True
-
-def get_old_files():
-	pass
-
-def delete_old_outputs():
-	pass

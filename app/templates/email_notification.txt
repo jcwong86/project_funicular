@@ -7,7 +7,7 @@ funicular has finished processing the following GTFS file!
 
 Please click the link below to download:
 
-{{url_for('download_file', unique_string = unique_string, _external = True)}}
+{{download_link}}
 
 Note that this link will expire in three days.
 

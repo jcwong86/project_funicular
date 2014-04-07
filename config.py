@@ -32,4 +32,8 @@ OUTPUT_PATH = os.environ['OUTPUT_PATH']
 # server name
 SERVER_NAME = os.environ['SERVER_NAME']
 
-# Amazon S3 information
+# Amazon S3 bucket
+S3_BUCKET = os.environ['S3_BUCKET']
+
+# debug flag
+APP_DEBUG = os.environ['APP_DEBUG']

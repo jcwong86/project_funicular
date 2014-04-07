@@ -26,9 +26,8 @@ def process_next_request(req):
 	main.go(req.gtfs_url, req.agency_id, req.uuid)
 	print 'Output files created!'
 	req.finish_processing()
-	# send_file_ready_notification(req.email, req.GTFS_description, req.unique_string)
-	print 'localhost:5000/download/' + req.uuid
-	print 'Notification sent!'
+	with app.app_context():
+		send_file_ready_notification(req.email, req.gtfs_description, req.uuid)
 
 def get_queue():
 	return Request.query.filter_by(status = 0).order_by(Request.request_time)

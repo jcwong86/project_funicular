@@ -7,10 +7,14 @@ SECRET_KEY = os.environ['SECRET_KEY']
 # mail server settings
 MAIL_SERVER = os.environ['MAIL_SERVER']
 MAIL_PORT = os.environ['MAIL_PORT']
-MAIL_USE_TLS = os.environ['MAIL_USE_TLS']
-MAIL_USE_SSL = os.environ['MAIL_USE_SSL']
-MAIL_USERNAME = os.environ['MAIL_USERNAME']
-MAIL_PASSWORD = os.environ['MAIL_PASSWORD']
+if MAIL_SERVER != 'localhost':
+	MAIL_USERNAME = os.environ['MAIL_USERNAME']
+	MAIL_PASSWORD = os.environ['MAIL_PASSWORD']
+	MAIL_USE_TLS = os.environ['MAIL_USE_TLS']
+	MAIL_USE_SSL = os.environ['MAIL_USE_SSL']
+else:
+	MAIL_USERNAME = None
+	MAIL_PASSWORD = None
 APP_EMAIL_ADDRESS = os.environ['APP_EMAIL_ADDRESS']
 
 # administrator settings
@@ -24,5 +28,8 @@ CONVERTER = os.environ['CONVERTER']
 
 # temporary file output path
 OUTPUT_PATH = os.environ['OUTPUT_PATH']
+
+# server name
+SERVER_NAME = os.environ['SERVER_NAME']
 
 # Amazon S3 information

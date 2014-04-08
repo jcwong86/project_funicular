@@ -58,7 +58,7 @@ def go(gtfs_url, short_agency_name_no_spaces, output_folder):
                 db_url.password, mode, 'route', short_agency_name_no_spaces,
                 output_folder)
         zipOut = archive(request_dir)
-        download_link = move_to_S3(zipOut)
+        move_to_S3(zipOut)
         print "GTFS Reader completed."
     else:
         print "!!ERROR: Import problem - program terminated."
@@ -70,7 +70,6 @@ def go(gtfs_url, short_agency_name_no_spaces, output_folder):
             " min " +str(round((time.time()-local_start)%60)) +" sec."
     print "----------------------------------"
     db.close()
-    return download_link
 
 def archive(directory):
     make_archive(directory, 'zip', directory)
@@ -81,7 +80,6 @@ def move_to_S3(file):
     s3_key = boto.connect_s3().get_bucket(S3_BUCKET, validate = False).new_key(os.path.basename(file))
     s3_key.set_contents_from_filename(file)
     os.remove(file)
-    return s3_key.generate_url(expires_in = 259200)
 
 if __name__ == "__main__":
     go(argv[1], argv[2], argv[3])

@@ -3,7 +3,8 @@ from flask import render_template, redirect, request, url_for, flash, json, json
 from app import app, db
 from models import Request
 from process_request import master_process
-import urllib, os
+import urllib, os, boto
+from config import S3_BUCKET
 
 @app.route('/')
 @app.route('/index')
@@ -50,8 +51,12 @@ def process_selection():
 def download_file(unique_string):
 	r = Request.query.filter_by(uuid = unique_string).first()
 	if r == None:
-		abort(404)
+		return 'Error: The file you requested does not exist.'
+	keyName = unique_string + '.zip'
+	s3_key = boto.connect_s3().get_bucket(S3_BUCKET, validate = False).get_key(keyName)
+	if s3_key == None:
+		return 'Error: Your link has expired. Please try submitting your request again.'
+	s3_url = s3_key.generate_url(expires_in = 259200)
 	r.downloads += 1
 	db.session.commit()
-	file_path = os.path.normcase('output/' + unique_string + '.zip')
-	return send_from_directory(app.static_folder, file_path, as_attachment = True)
+	return redirect(s3_url)

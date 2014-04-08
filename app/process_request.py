@@ -23,11 +23,11 @@ def process_queue():
 
 def process_next_request(req):
 	req.begin_processing()
-	s3_link = main.go(req.gtfs_url, req.agency_id, req.uuid)
+	main.go(req.gtfs_url, req.agency_id, req.uuid)
 	print 'Output files created!'
 	req.finish_processing()
 	with app.app_context():
-		send_file_ready_notification(req.email, req.gtfs_description, s3_link)
+		send_file_ready_notification(req.email, req.gtfs_description, req.uuid)
 
 def get_queue():
 	return Request.query.filter_by(status = 0).order_by(Request.request_time)

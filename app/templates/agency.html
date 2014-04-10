@@ -76,22 +76,56 @@
       <div class="modal-body">
         <p>You have chosen to create a shapefile from the following GTFS file:</p>
         <p class="GTFS-description"></p>
-        <!--<p class="GTFS-date-added"></p>
-        <p class="GTFS-user"></p>-->
         <p>If this is correct, please enter your email address and click "Submit" below.
         You will receive an email containing a link to download your file when it is ready.</p>
         <p>If this is not correct, please click "Cancel" below.</p>
       </div>
       <div class="modal-footer">
-      	<form class="form-inline" role="form">
-				  <div class="form-group">
-				    <!--<label for="exampleInputEmail1">Email address</label>-->
-				    <input type="email" class="form-control" id="email-input" placeholder="enter email">
-				  	<button type="button" class="btn btn-primary" id="confirm">Submit</button>
-		        <button type="button" class="btn btn-default" id="close-modal1"
-		        	data-dismiss="modal">Cancel</button>
-				  </div>
-				 </form>
+      	<form class="form-horizontal" role="form">
+				  <div class="form-group" id="name-form-group">
+			    	<label for="name-input" class="col-sm-2 control-label">Name</label>
+			    	<div class="col-sm-10">
+				    	<input type="text" class="form-control" id="name-input" placeholder="enter name">
+				    </div>
+			  	</div>
+			  	<div class="form-group" id="email-form-group">
+			    	<label for="email-input" class="col-sm-2 control-label">Email</label>
+			    	<div class="col-sm-10">
+				    	<input type="email" class="form-control" id="email-input" placeholder="enter email">
+				    </div>
+			  	</div>
+			    <div class="form-group" id="user-type-form-group">
+			    	<label for="user-type-select" class="col-sm-2 control-label">
+			    			Role</label>
+						<div class="col-sm-10">
+							<select class="form-control" id="user-type-select">
+								<option value="" selected disabled>select the option that best describes you</option>
+								<option>consultant</option>
+								<option>student</option>
+								<option>researcher</option>
+								<option>agency staff</option>
+								<option>other</option>
+							</select>
+						</div>
+					</div>
+					<div class="form-group">
+					  <div class="col-sm-offset-2 col-sm-10">
+						  <div class="checkbox">
+						  	<label>
+							    <input type="checkbox" id="mailing-list-input" value="mailing_list" checked>
+							    Please add me to the funicular mailing list!
+							  </label>
+							</div>
+						</div>
+					</div>
+				  <div class="form-group" >
+				  	<div class="span-right modal-button-group">
+						  <button type="button" class="btn btn-primary" id="confirm">Submit</button>
+				      <button type="button" class="btn btn-default" id="close-modal1"
+				        	data-dismiss="modal">Cancel</button>
+				    </div>
+		      </div>
+				</form>
       </div>
     </div><!-- /.modal-content -->
   </div><!-- /.modal-dialog -->
@@ -107,8 +141,6 @@
       <div class="modal-body">
         <p>funicular is currently processing your GTFS file:</p>
         <p class="GTFS-description"></p>
-        <!--<p class="GTFS-date-added"></p>
-        <p class="GTFS-user"></p>-->
         <p>You will receive a notification at 
         	<span class="user-email">email address</span> 
         	when your file is ready.</p>
@@ -130,14 +162,17 @@
 
 {% block script_content %}
 <script>
-	var agency_info_url = '{{url_for('get_agencies')}}'
+	var agency_info_url = '{{url_for('get_agencies')}}';
 	getAgencies(agency_info_url);
 	{% if active_agency %}
-	var active_agency = true
+	var active_agency = true;
 	var active_agency_id =  '{{active_agency.data.agency.dataexchange_id}}';
 	var active_agency_state = '{{active_agency.data.agency.state}}';
 	{% else %}
-	var active_agency = false
+	var active_agency = false;
 	{% endif %}
+	$(document).ready(function() {
+		agencyReady();
+	});
 </script>
 {% endblock %}

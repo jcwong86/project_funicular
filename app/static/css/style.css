@@ -35,3 +35,10 @@ body {
 .GTFS-table > tbody > tr:first-child > td{
   background-color: #dff0d8;
 }
+#modal1 .modal-footer {
+  text-align: left;
+}
+.modal-button-group {
+  padding-left: 15px;
+  padding-right:15px;
+}

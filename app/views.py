@@ -60,11 +60,15 @@ def get_agencies():
 @app.route('/process_selection', methods = ['POST'])
 def process_selection():
 	# check if user is allowed to submit
-	email = request.form['email']
 	GTFS_url = request.form['fileURL']
 	GTFS_description = request.form['GTFS_description']
 	agency_id = request.form['agency_id']
-	master_process(email, GTFS_url, GTFS_description, agency_id)
+	email = request.form['email']
+	user_name = request.form['user_name']
+	user_type = request.form['user_type']
+	mailing_list = request.form['mailing_list']
+	master_process(GTFS_url, GTFS_description, agency_id, email, user_name,
+		user_type, mailing_list)
 	return 'OK'
 
 @app.route('/download/<unique_string>')

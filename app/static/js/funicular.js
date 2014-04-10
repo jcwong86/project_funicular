@@ -55,27 +55,32 @@ function confirmGTFSSelection(description, date_added, user, fileURL) {
 	$('#modal1').modal('show');
 	$('#confirm').unbind('click');
 	$('#confirm').click(function() {
-        submitRequest($('#email-input')[0].value, GTFS_description_full, fileURL);
-        // get values from other fields
+        submitRequest(GTFS_description_full, fileURL, $('#name-input')[0].value,
+        	$('#email-input')[0].value, $('#user-type-select')[0].value, 
+        	$('#mailing-list-input').is(':checked'));
     });
 };
 
-function submitRequest(email, GTFS_description, fileURL) {
-	var valid_email = validateEmail(email)
-	if(!valid_email) {
-		alert('Please enter a valid email address'); //change this from an alert to an on-page notification?
+function submitRequest(GTFS_description, fileURL, user_name, email, user_type, mailing_list) {
+	var valid_request = validateRequest(user_name, email, user_type);
+	if(!valid_request) {
+		alert('Please correct errors and re-submit.');
 	} else {
-		$('#modal1').modal('hide')
-		$('.user-email').text(email)
+		$('#modal1').modal('hide');
+		$('.user-email').text(email);
 		$('#modal2').modal('show');
 		url = '/process_selection';
 		$.ajax({
 	        url: url,
 	        type: 'POST',
-	        data: {email: email,
-	        	GTFS_description: GTFS_description,
+	        data: {
+	           	GTFS_description: GTFS_description,
 	        	fileURL: fileURL,
-	        	agency_id: active_agency_id
+	        	agency_id: active_agency_id,
+	        	user_name: user_name,
+	        	email: email,
+	        	user_type: user_type,
+	        	mailing_list: mailing_list
 	        }
 	    }).done(function() {
 	    	console.log('Request logged!');
@@ -85,16 +90,28 @@ function submitRequest(email, GTFS_description, fileURL) {
 	}
 };
 
-function validateEmail(email) {
-	// adapt to validate all fields
+function validateRequest(name, email, user_type) {
+	valid = true;
+	if(name === '') {
+		$('#name-form-group').addClass('has-error');
+		valid = false;
+	}
 	var atpos=email.indexOf('@');
 	var dotpos=email.lastIndexOf('.');
 	if (atpos<1 || dotpos<atpos+2 || dotpos+2>=email.length) {
-		return false;
+		$('#email-form-group').addClass('has-error');
+		valid = false;
 	} else {
-		return true;
+		$('#email-form-group').removeClass('has-error');
 	}
+	if(user_type === '') {
+		$('#user-type-form-group').addClass('has-error');
+		valid = false;
+	}
+	return valid;
 };
+
+// function validateName()
 
 function addAlert(type, dismissable, message) {
 	var d_str = '';
@@ -114,7 +131,7 @@ function addAlert(type, dismissable, message) {
 	$('.flash-container').append(string);
 };
 
-$(document).ready(function() {
+function agencyReady() {
 	if(active_agency) {
 		fillAgencySelect(active_agency_state);
 		$('#state-select')[0].value = active_agency_state;
@@ -124,9 +141,6 @@ $(document).ready(function() {
 		$('#state-select')[0].value = '';
 		$('#agency-select')[0].value = '';
 		$('#state-select')[0].focus();
-		// addAlert('info', true, "Welcome to funicular! In case you're new here, \
-		// 	you can get started by selecting an agency below, then clicking on \
-		// 	the desired GTFS update.");
 	}
 	$('#submit').click(function(){
 		if($('#agency-select')[0].value === '') {
@@ -142,9 +156,9 @@ $(document).ready(function() {
    		$('#agency-select').focus();
   	});
   	$('#modal1').on('shown.bs.modal', function() {
-  		$('#email-input').focus();
+  		$('#name-input').focus();
   	});
   	$('#modal2').on('shown.bs.modal', function() {
   		$('#close-modal2').focus();
   	});
-});
+};

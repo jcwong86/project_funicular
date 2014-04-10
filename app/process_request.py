@@ -4,14 +4,18 @@ from models import Request
 from decorators import async
 import uuid
 
-def master_process(email, GTFS_url, GTFS_description, agency_id):
-	log_request(email, GTFS_url, GTFS_description, agency_id)
+def master_process(GTFS_url, GTFS_description, agency_id, email, user_name,
+		user_type, mailing_list):
+	log_request(GTFS_url, GTFS_description, agency_id, email, user_name,
+		user_type, mailing_list)
 	if check_for_active_request() == False:
 		process_queue()
 
-def log_request(email, GTFS_url, GTFS_description, agency_id):
+def log_request(GTFS_url, GTFS_description, agency_id, email, user_name,
+		user_type, mailing_list):
 	unique_string = str(uuid.uuid4())
-	req = Request(GTFS_url, GTFS_description, agency_id, email, unique_string)
+	req = Request(GTFS_url, GTFS_description, agency_id, email, unique_string,
+		user_name, user_type, mailing_list)
 	db.session.add(req)
 	db.session.commit()
 	print 'Request logged!'

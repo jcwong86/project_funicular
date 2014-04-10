@@ -5,14 +5,18 @@ class Request(db.Model):
 	id = db.Column(db.Integer, primary_key = True)
 	request_time = db.Column(db.DateTime)
 	gtfs_url = db.Column(db.String(240))
-	gtfs_description = db.Column(db.String(360))
+	gtfs_description = db.Column(db.Text)
 	agency_id = db.Column(db.String(120))
 	email = db.Column(db.String(120))
 	uuid = db.Column(db.String(36))
 	status = db.Column(db.Integer)
 	downloads = db.Column(db.Integer)
+	user_name = db.Column(db.String(120))
+	user_type = db.Column(db.String(12))
+	mailing_list = db.Column(db.Boolean)
 
-	def __init__(self, gtfs_url, gtfs_description, agency_id, email, uuid):
+	def __init__(self, gtfs_url, gtfs_description, agency_id, email,
+			uuid, user_name, user_type, mailing_list):
 		self.request_time = datetime.utcnow()
 		self.gtfs_url = gtfs_url
 		self.gtfs_description = gtfs_description
@@ -21,6 +25,9 @@ class Request(db.Model):
 		self.uuid = uuid
 		self.status = 0
 		self.downloads = 0
+		self.user_name = user_name
+		self.user_type = user_type
+		self.mailing_list = mailing_list
 
 	# status indicators
 	# 0: queued for processing

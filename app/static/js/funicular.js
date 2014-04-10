@@ -56,6 +56,7 @@ function confirmGTFSSelection(description, date_added, user, fileURL) {
 	$('#confirm').unbind('click');
 	$('#confirm').click(function() {
         submitRequest($('#email-input')[0].value, GTFS_description_full, fileURL);
+        // get values from other fields
     });
 };
 
@@ -85,6 +86,7 @@ function submitRequest(email, GTFS_description, fileURL) {
 };
 
 function validateEmail(email) {
+	// adapt to validate all fields
 	var atpos=email.indexOf('@');
 	var dotpos=email.lastIndexOf('.');
 	if (atpos<1 || dotpos<atpos+2 || dotpos+2>=email.length) {
@@ -122,9 +124,9 @@ $(document).ready(function() {
 		$('#state-select')[0].value = '';
 		$('#agency-select')[0].value = '';
 		$('#state-select')[0].focus();
-		addAlert('info', true, "Welcome to funicular! In case you're new here, \
-			you can get started by selecting an agency below, then clicking on \
-			the desired GTFS update.");
+		// addAlert('info', true, "Welcome to funicular! In case you're new here, \
+		// 	you can get started by selecting an agency below, then clicking on \
+		// 	the desired GTFS update.");
 	}
 	$('#submit').click(function(){
 		if($('#agency-select')[0].value === '') {

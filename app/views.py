@@ -12,12 +12,32 @@ def index():
 	return render_template('index.html',
 		title = 'Home')
 
+@app.route('/about_us')
+def about_us():
+	return render_template('about_us.html',
+		title = 'About')
+
+@app.route('/data_output')
+def data_output():
+	return render_template('data_output.html',
+		title = 'Output Data')
+
+@app.route('/FAQ')
+def faq():
+	return render_template('faq.html',
+		title = 'FAQ')
+
+@app.route('/agency')
+def select_agency():
+	return render_template('agency.html',
+		title = 'Select Agency')
+
 @app.route('/agency/<agency_id>')
 def agency(agency_id):
 	agency_url = 'http://www.gtfs-data-exchange.com/api/agency?agency=' + agency_id
 	agency_info = json.load(urllib.urlopen(agency_url))
 	agency_name = agency_info['data']['agency']['name']
-	return render_template('index.html',
+	return render_template('agency.html',
 		active_agency = agency_info,
 		title = agency_name)
 
@@ -56,7 +76,7 @@ def download_file(unique_string):
 	s3_key = boto.connect_s3().get_bucket(S3_BUCKET, validate = False).get_key(keyName)
 	if s3_key == None:
 		return 'Error: Your link has expired. Please try submitting your request again.'
-	s3_url = s3_key.generate_url(expires_in = 259200)
+	s3_url = s3_key.generate_url(expires_in = 60)
 	r.downloads += 1
 	db.session.commit()
 	return redirect(s3_url)

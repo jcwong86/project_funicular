@@ -1,0 +1,63 @@
+<!-- extend base layout -->
+{% extends 'base.html' %}
+
+{% block html_content %}
+<p><b>funicular</b> creates two sets of files for each mode in each GTFS feed processed. The stops file will always be created, but if the GTFS feed has missing route data, the route file will not be created. The information shown includes:</p>
+
+<h3>Route Shapefile</h3>
+
+<ul>
+<li>ROUTE_ID - provided by agency </li>
+<li>ROUTE_TYPE - GTFS mode definition provided by agency
+<ul>
+          <li><b>0</b> - Tram, Streetcar, Light rail. Any light rail
+            or street level system within a metropolitan area. </li>
+          <li><b>1</b> - Subway, Metro. Any underground rail system
+            within a metropolitan area. </li>
+          <li><b>2</b> - Rail. Used for intercity or long-distance
+            travel. </li>
+          <li><b>3</b> - Bus. Used for short- and long-distance bus
+            routes. </li>
+          <li><b>4</b> - Ferry. Used for short- and long-distance
+            boat service. </li>
+          <li><b>5</b> - Cable car. Used for street-level cable cars
+            where the cable runs beneath the car. </li>
+          <li><b>6</b> - Gondola, Suspended cable car. Typically used
+            for aerial cable cars where the car is suspended from the
+            cable. </li>
+          <li><b>7</b> - Funicular. Any rail system designed for
+            steep inclines. </li>
+        </ul>
+<li>RT_SNAME (Route short name) - provided by agency</li>
+<li>RT_LNAME (Route Long Name) - provided by agency</li>
+<li>T_HEADSIGN (Trip Headsign) - provided by agency</li>
+<li>DIR_ID (Direction ID) - provided by agency (1 or 0, typically for in/outbound)</li>
+<li>Q_SHAPE_ID (Unique Shape ID) - a unique geometry identifier</li>
+<li>MAXTRIPDUR (Max trip duration) - minutes of longest scheduled trip running on this route</li>
+<li>MINTRIPDUR (Min trip duration) - minutes of shortest scheduled trip running on this route</li>
+<li>TYPNSTOPS (Typical number of stops) - the average number of stops scheduled for trips running on this route</li>
+<li>TYPTRIPLEN (Typical trip length) - The calculated length of this route geometry in miles</li>
+<li>FRSTTRIPSA (First Trip - Seconds Past Midnight) - the time of the first departure running on this route, shown in seconds past midnight (because of arrival times past midnight, the time field may cause confusion)</li>
+<li>LASTTRIPSA (Last Trip - Seconds past midnight)  - the time of the last arrival on this route, shown in seconds past midnight (because of arrival times past midnight, the time field may cause confusion)</li>
+<li>NTRIPS_SA (Number of trips on Sat) - the number of scheduled trips on this route on a Saturday (the first valid Saturday available in the GTFS feed)</li>
+<li>...SU for sundays, calculated as first valid Sunday available in GTFS feed</li>
+<li>...WK for weekdays, calculated as first valid Tuesday available in GTFS feed (to avoid frequent Monday holidays)</li>
+</ul>
+<h3>Stop Shapefile</h3>
+<ul>
+<li>STOP_ID  - unique stop identifier provided by agency</li>
+<li>ROUTE_TYPE - GTFS mode definition provided by agency; 1 means subway/heavy rail.</li>
+<li>STOP_LAT/STOP_LON - coordinates provided by agency</li>
+<li>STOPNAME - provided by agency</li>
+<li>STOPDESC (Stop description) - provided by agency</li>
+<li>NUMRTS (Number of routes) - number of routes serving this stop for the mode provided. Calculated using unique route_id's (less robust than route file calculations)</li>
+<li>RSERVED_ID (Routes Served - route_ids) - listing of the route_id's that serve this stop</li>
+<li>RSERVED_SH (Routes Served - route short names) - listing of the route short names that serve this stop</li>
+<li>RSERVED_LG (Routes Served - route short names) - listing of the route long names that serve this stop</li>
+</ul>
+{% endblock %}
+
+{% block script_content %}
+<script>
+</script>
+{% endblock %}

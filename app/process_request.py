@@ -10,6 +10,10 @@ def master_process(GTFS_url, GTFS_description, agency_id, email, user_name,
 		user_type, mailing_list)
 	if check_for_active_request() == False:
 		process_queue()
+		queue_position = 1
+	else:
+		queue_position = len(get_queue().all()) + 1
+	return str(queue_position)
 
 def log_request(GTFS_url, GTFS_description, agency_id, email, user_name,
 		user_type, mailing_list):

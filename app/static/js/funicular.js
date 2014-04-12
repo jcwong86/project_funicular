@@ -82,7 +82,8 @@ function submitRequest(GTFS_description, fileURL, user_name, email, user_type, m
 	        	user_type: user_type,
 	        	mailing_list: mailing_list
 	        }
-	    }).done(function() {
+	    }).done(function(str_queue_position) {
+	    	$('#max-wait').text(getMaxWait(parseInt(str_queue_position)));
 	    	console.log('Request logged!');
 	    }).fail(function() {
 	        console.log('Request failed!');
@@ -111,7 +112,10 @@ function validateRequest(name, email, user_type) {
 	return valid;
 };
 
-// function validateName()
+function getMaxWait(position) {
+	return 'Your file is #' + position + ' in the queue. Processing should ' +
+			'be complete in no more than ' + 30 * position + ' minutes.';
+}
 
 function addAlert(type, dismissable, message) {
 	var d_str = '';

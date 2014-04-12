@@ -67,9 +67,9 @@ def process_selection():
 	user_name = request.form['user_name']
 	user_type = request.form['user_type']
 	mailing_list = request.form['mailing_list']
-	master_process(GTFS_url, GTFS_description, agency_id, email, user_name,
-		user_type, mailing_list)
-	return 'OK'
+	str_queue_position = master_process(GTFS_url, GTFS_description, agency_id,
+		email, user_name, user_type, mailing_list)
+	return str_queue_position
 
 @app.route('/download/<unique_string>')
 def download_file(unique_string):

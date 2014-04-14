@@ -49,14 +49,14 @@ function fillAgencySelect(state) {
 };
 
 function confirmGTFSSelection(description, date_added, user, fileURL) {
-	var GTFS_description_full = description + ', added by ' + user + ' ' + 
+	var GTFS_description_full = description + ', added by ' + user + ' ' +
 		moment.unix(date_added).calendar() + '.';
 	$('.GTFS-description').text(GTFS_description_full);
 	$('#modal1').modal('show');
 	$('#confirm').unbind('click');
 	$('#confirm').click(function() {
         submitRequest(GTFS_description_full, fileURL, $('#name-input')[0].value,
-        	$('#email-input')[0].value, $('#user-type-select')[0].value, 
+        	$('#email-input')[0].value, $('#user-type-select')[0].value,
         	$('#mailing-list-input').is(':checked'));
     });
 };
@@ -68,7 +68,6 @@ function submitRequest(GTFS_description, fileURL, user_name, email, user_type, m
 	} else {
 		$('#modal1').modal('hide');
 		$('.user-email').text(email);
-		$('#modal2').modal('show');
 		url = '/process_selection';
 		$.ajax({
 	        url: url,
@@ -83,8 +82,14 @@ function submitRequest(GTFS_description, fileURL, user_name, email, user_type, m
 	        	mailing_list: mailing_list
 	        }
 	    }).done(function(str_queue_position) {
-	    	$('#max-wait').text(getMaxWait(parseInt(str_queue_position)));
-	    	console.log('Request logged!');
+	    	if (str_queue_position === "reject") {
+				$('#modal3').modal('show');
+				console.log('Request not logged. Request for this email address already exists.')
+			} else {
+				$('#max-wait').text(getMaxWait(parseInt(str_queue_position)));
+				$('#modal2').modal('show');
+		    	console.log('Request logged!');
+			}
 	    }).fail(function() {
 	        console.log('Request failed!');
 	    });

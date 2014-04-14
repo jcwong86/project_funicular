@@ -3,9 +3,13 @@ from emails import send_file_ready_notification
 from models import Request
 from decorators import async
 import uuid
+from config import LIMIT_USER_REQUESTS
 
 def master_process(GTFS_url, GTFS_description, agency_id, email, user_name,
 		user_type, mailing_list):
+	if LIMIT_USER_REQUESTS == 'true':
+		if request_exists(email) == True:
+			return "reject"
 	log_request(GTFS_url, GTFS_description, agency_id, email, user_name,
 		user_type, mailing_list)
 	if check_for_active_request() == False:
@@ -46,4 +50,10 @@ def check_for_active_request():
 		return False
 	else:
 		print 'Active request exists.'
+		return True
+
+def request_exists(email):
+	if Request.query.filter(Request.email == email, Request.status < 2).first() == None:
+		return False
+	else:
 		return True

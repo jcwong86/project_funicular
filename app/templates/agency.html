@@ -142,8 +142,8 @@
         <p>funicular has logged your request to process the following GTFS file:</p>
         <p class="GTFS-description"></p>
         <p id="max-wait">max wait</p>
-        <p>You will receive a notification at 
-        	<span class="user-email">email address</span> 
+        <p>You will receive a notification at
+        	<span class="user-email">email address</span>
         	when your file is ready.</p>
         <p>Thank you for using funicular!</p>
       </div>
@@ -157,6 +157,31 @@
       </div>
     </div><!-- /.modal-content -->
   </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+<div class="modal fade" id="modal3" tabindex="-1" role="dialog">
+<div class="modal-dialog">
+	<div class="modal-content">
+	<div class="modal-header">
+		<button type="button" class="close" data-dismiss="modal">&times;</button>
+		<h4 class="modal-title" id="myModalLabel">Request limit exceeded</h4>
+	</div>
+	<div class="modal-body">
+		<p>funicular has detected an existing request for
+			<span class="user-email">email address</span>.
+			Please retry your request once the existing request has
+			been processed.</p>
+	</div>
+	<div class="modal-footer">
+		<form class="form-inline" role="form">
+				<div class="form-group">
+				<button type="button" class="btn btn-default" id="close-modal3"
+					data-dismiss="modal">Close</button>
+				</div>
+				</form>
+	</div>
+	</div><!-- /.modal-content -->
+</div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
 
 {% endblock %}

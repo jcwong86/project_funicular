@@ -37,3 +37,7 @@ S3_BUCKET = os.environ['S3_BUCKET']
 
 # debug flag
 APP_DEBUG = os.environ['APP_DEBUG']
+
+# limit users toggle
+# if true, each email address is limited to one active request
+LIMIT_USER_REQUESTS = os.environ['LIMIT_USER_REQUESTS']

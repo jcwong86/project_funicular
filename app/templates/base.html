@@ -7,6 +7,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
     <!-- <link rel="shortcut icon" href="../../assets/ico/favicon.ico"> -->
+    <base target="_blank">
     {% if title %}
     <title>funicular &mdash; {{title}}</title>
     {% else %}
@@ -35,14 +36,14 @@
           <div class="navbar-collapse collapse">
             <ul class="nav navbar-nav navbar-right">
               <li id="navHome"><a href="{{url_for('index')}}">Home</a></li>
-              <li id="navSelect"><a href="{{url_for('select_agency')}}">Select GTFS File</a></li>
+              <li id="navSelect"><a href="{{url_for('select_gtfs')}}">Select GTFS File</a></li>
               <li class="dropdown">
                 <a href="{{url_for('about_us')}}" class="dropdown-toggle" data-toggle="dropdown">
                   About <b class="caret"></b></a>
                 <ul class="dropdown-menu">
-                  <li><a href="{{url_for('about_us')}}">About funicular</a></li>
-                  <li><a href="{{url_for('data_output')}}">About output data</a></li>
-                  <li><a href="{{url_for('faq')}}">FAQ</a></li>
+                  <li id="navAboutFunicular"><a href="{{url_for('about_us')}}">About funicular</a></li>
+                  <li id="navAboutOutput"><a href="{{url_for('data_output')}}">About output data</a></li>
+                  <li id="navFAQ"><a href="{{url_for('faq')}}">FAQ</a></li>
                 </ul>
               </li>
             </ul>
@@ -64,8 +65,8 @@
     </div>
     <div id="footer">
       <div class="container">
-        <p class="text-muted">&copy; 2014 
-          <a tabindex="-1" href="http://www.jameswong.org">James Wong</a> and 
+        <p class="text-muted">&copy; 2014
+          <a tabindex="-1" href="http://www.jameswong.org">James Wong</a> and
           <a tabindex="-1" href="http://www.twitter.com/drewdez">Andrew Desautels</a>
           <span class="span-right">
             <a href="https://github.com/jcwong86/project_funicular">view source on GitHub</a>

@@ -6,7 +6,7 @@ import uuid
 from config import LIMIT_USER_REQUESTS
 
 def master_process(GTFS_url, GTFS_description, agency_id, email, user_name,
-		user_type, mailing_list):
+			user_type, mailing_list):
 	if LIMIT_USER_REQUESTS == 'true':
 		if request_exists(email) == True:
 			return "reject"
@@ -20,7 +20,7 @@ def master_process(GTFS_url, GTFS_description, agency_id, email, user_name,
 	return str(queue_position)
 
 def log_request(GTFS_url, GTFS_description, agency_id, email, user_name,
-		user_type, mailing_list):
+			user_type, mailing_list):
 	unique_string = str(uuid.uuid4())
 	req = Request(GTFS_url, GTFS_description, agency_id, email, unique_string,
 		user_name, user_type, mailing_list)
@@ -53,7 +53,8 @@ def check_for_active_request():
 		return True
 
 def request_exists(email):
-	if Request.query.filter(Request.email == email, Request.status < 2).first() == None:
+	if Request.query.filter(Request.email == email,
+			Request.status < 2).first() == None:
 		return False
 	else:
 		return True

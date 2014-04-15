@@ -5,7 +5,6 @@
 <div class="page-header">
 	<h3>About funicular</h3>
 </div>
-<!-- <h2>Welcome to funicular! </h2> -->
 <p><b>funicular</b> converts transit agencies' open <a href='https://developers.google.com/transit/gtfs/'>GTFS</a> data into planner-friendly GIS shapefiles. Choose an agency below and <b>funicular</b> will prepare a zip file with the routes and stops for with the selected GFTS file contains data. <b>funicular</b> also calculates some useful metadata for each geographic element so you can see:</p>
 <ul>
 	<li>Routes served by each stop</li>
@@ -14,27 +13,23 @@
 	<li>Service hours and trip durations</li>
 	<li>with more coming! </li>
 </ul>
-<p>Mention GTFS Exchange</p>
+<p>[Mention GTFS Exchange]</p>
 <p><b>funicular</b> is a work in progress and we invite your feedback on its usefulness, the features you like or don't like in the output, other things you'd like to see. Please send comments to us at <a href="mailto:transitshpgenerator@gmail.com">transitshpgenerator@gmail.com</a>.</p>
 <div class="page-header">
 	<h3>Actions</h3>
 </div>
 <div class="list-group">
-  <a href="{{url_for('select_agency')}}" class="list-group-item">Get started by selecting a GTFS feed</a>
-  <a href="http://www.gtfs-data-exchange.com/" class="list-group-item">
-  	Learn more about GTFS feeds at GTFS Data Exchange</a>
-  <a href="{{url_for('data_output')}}" class="list-group-item">Learn about output data</a>
-  <a href="{{url_for('faq')}}" class="list-group-item">Explore frequently asked questions</a>
-  <a href="{{url_for('about_us')}}" class="list-group-item">Learn about funicular and its creators</a>
-</div>
+	<a href="{{url_for('select_gtfs')}}" class="list-group-item">Get started by selecting a GTFS feed</a>
+	<a href="http://www.gtfs-data-exchange.com/" class="list-group-item">
+		Learn more about GTFS feeds at GTFS Data Exchange</a>
+		<a href="{{url_for('data_output')}}" class="list-group-item">Learn about output data</a>
+		<a href="{{url_for('faq')}}" class="list-group-item">Explore frequently asked questions</a>
+		<a href="{{url_for('about_us')}}" class="list-group-item">Learn about funicular and its creators</a>
+	</div>
 {% endblock %}
 
 {% block script_content %}
 <script>
-		// {% if alert %}	
-		// addAlert('info', true, "Welcome to funicular! In case you're new here, \
-		// 	you can get started by selecting an agency below, then clicking on \
-		// 	the desired GTFS update.");
-		// {% endif %}
+	$("#navHome").addClass("active");
 </script>
 {% endblock %}

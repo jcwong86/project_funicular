@@ -1,0 +1,197 @@
+<!-- extend base layout -->
+{% extends 'base.html' %}
+
+{% block html_content %}
+
+<div class="panel-group" id="accordion">
+	<div class="panel panel-default">
+		<div class="panel-heading">
+			<h2 class="panel-title">
+				<a data-toggle="collapse" data-parent="#accordion" href="#collapseOne">
+					Choose file from GTFS Data Exchange
+				</a>
+			</h2>
+		</div>
+		<div id="collapseOne" class="panel-collapse collapse">
+			<div class="panel-body">
+				<form class="form-inline" role="form">
+					<div class="form-group">
+						<select class="form-control" id="state-select">
+							<option value="" selected disabled>select state</option>
+						</select>
+					</div>
+					<div class="form-group">
+						<select name="agency" class="form-control" id="agency-select" required>
+							<option value="" selected disabled>select agency</option>
+						</select>
+					</div>
+					<button type="button" id="submit-existing" class="btn btn-primary">Go!</button>
+				</form>
+			</div>
+		</div>
+	</div>
+	<div class="panel panel-default">
+		<div class="panel-heading">
+			<h4 class="panel-title">
+				<a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo">
+					Choose GTFS file by URL
+				</a>
+			</h4>
+		</div>
+		<div id="collapseTwo" class="panel-collapse collapse">
+			<div class="panel-body">
+				<form class="form-inline" role="form">
+					<div class="form-group">
+						<input type="text" class="form-control" id="custom-GTFS-url" placeholder="Enter GTFS URL">
+					</div>
+					<button type="button" id="submit-url" class="btn btn-primary">Go!</button>
+				</form>
+			</div>
+		</div>
+	</div>
+	<div class="panel panel-default">
+		<div class="panel-heading">
+			<h4 class="panel-title">
+				<a data-toggle="collapse" data-parent="#accordion" href="#collapseThree">
+					Upload GTFS file
+				</a>
+			</h4>
+		</div>
+		<div id="collapseThree" class="panel-collapse collapse">
+			<div class="panel-body">
+				Coming soon!
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="modal fade" id="modal1" tabindex="-1" role="dialog">
+<div class="modal-dialog">
+	<div class="modal-content">
+	<div class="modal-header">
+		<button type="button" class="close" data-dismiss="modal">&times;</button>
+		<h4 class="modal-title" id="myModalLabel">Confirm your selection</h4>
+	</div>
+	<div class="modal-body">
+		<p>You have chosen to create a shapefile from the following GTFS file:</p>
+		<p class="GTFS-description"></p>
+		<p>If this is correct, please enter your email address and click "Submit" below.
+		You will receive an email containing a link to download your file when it is ready.</p>
+		<p>If this is not correct, please click "Cancel" below.</p>
+	</div>
+	<div class="modal-footer">
+		<form class="form-horizontal" role="form">
+				<div class="form-group" id="name-form-group">
+					<label for="name-input" class="col-sm-2 control-label">Name</label>
+					<div class="col-sm-10">
+						<input type="text" class="form-control" id="name-input" placeholder="enter name">
+					</div>
+				</div>
+				<div class="form-group" id="email-form-group">
+					<label for="email-input" class="col-sm-2 control-label">Email</label>
+					<div class="col-sm-10">
+						<input type="email" class="form-control" id="email-input" placeholder="enter email">
+					</div>
+				</div>
+				<div class="form-group" id="user-type-form-group">
+					<label for="user-type-select" class="col-sm-2 control-label">
+							Role</label>
+						<div class="col-sm-10">
+							<select class="form-control" id="user-type-select">
+								<option value="" selected disabled>select the option that best describes you</option>
+								<option>consultant</option>
+								<option>student</option>
+								<option>researcher</option>
+								<option>agency staff</option>
+								<option>other</option>
+							</select>
+						</div>
+					</div>
+					<div class="form-group">
+					<div class="col-sm-offset-2 col-sm-10">
+						<div class="checkbox">
+							<label>
+								<input type="checkbox" id="mailing-list-input" value="mailing_list" checked>
+								Please add me to the funicular mailing list!
+							</label>
+							</div>
+						</div>
+					</div>
+				<div class="form-group" >
+					<div class="span-right modal-button-group">
+						<button type="button" class="btn btn-primary" id="confirm">Submit</button>
+					<button type="button" class="btn btn-default" id="close-modal1"
+							data-dismiss="modal">Cancel</button>
+					</div>
+			</div>
+				</form>
+	</div>
+	</div><!-- /.modal-content -->
+</div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+<div class="modal fade" id="modal2" tabindex="-1" role="dialog">
+<div class="modal-dialog">
+	<div class="modal-content">
+	<div class="modal-header">
+		<button type="button" class="close" data-dismiss="modal">&times;</button>
+		<h4 class="modal-title" id="myModalLabel">File processing</h4>
+	</div>
+	<div class="modal-body">
+		<p>funicular has logged your request to process the following GTFS file:</p>
+		<p class="GTFS-description"></p>
+		<p id="max-wait">max wait</p>
+		<p>You will receive a notification at
+			<span class="user-email">email address</span>
+			when your file is ready.</p>
+		<p>Thank you for using funicular!</p>
+	</div>
+	<div class="modal-footer">
+		<form class="form-inline" role="form">
+				<div class="form-group">
+				<button type="button" class="btn btn-default" id="close-modal2"
+					data-dismiss="modal">Close</button>
+				</div>
+				</form>
+	</div>
+	</div><!-- /.modal-content -->
+</div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+<div class="modal fade" id="modal3" tabindex="-1" role="dialog">
+<div class="modal-dialog">
+	<div class="modal-content">
+	<div class="modal-header">
+		<button type="button" class="close" data-dismiss="modal">&times;</button>
+		<h4 class="modal-title" id="myModalLabel">Request limit exceeded</h4>
+	</div>
+	<div class="modal-body">
+		<p>funicular has detected an existing request for
+			<span class="user-email">email address</span>.
+			Please retry your request once the existing request has
+			been processed.</p>
+	</div>
+	<div class="modal-footer">
+		<form class="form-inline" role="form">
+				<div class="form-group">
+				<button type="button" class="btn btn-default" id="close-modal3"
+					data-dismiss="modal">Close</button>
+				</div>
+				</form>
+	</div>
+	</div><!-- /.modal-content -->
+</div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+{% endblock %}
+
+{% block script_content %}
+<script>
+	var agency_info_url = '{{url_for('get_agencies')}}';
+	getAgencies(agency_info_url);
+	$("#navSelect").addClass("active");
+	$(document).ready(function() {
+		SelectGTFSReady();
+	});
+</script>
+{% endblock %}

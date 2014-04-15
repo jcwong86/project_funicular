@@ -1,5 +1,5 @@
-from flask import render_template, redirect, request, url_for, flash, json, jsonify, \
-	send_from_directory, abort
+from flask import render_template, redirect, request, url_for, flash, json, \
+		jsonify, send_from_directory, abort
 from app import app, db
 from models import Request
 from process_request import master_process
@@ -27,14 +27,15 @@ def faq():
 	return render_template('faq.html',
 		title = 'FAQ')
 
-@app.route('/agency')
-def select_agency():
-	return render_template('agency.html',
-		title = 'Select Agency')
+@app.route('/select_gtfs')
+def select_gtfs():
+	return render_template('select_gtfs.html',
+		title = 'Select GTFS File')
 
 @app.route('/agency/<agency_id>')
 def agency(agency_id):
-	agency_url = 'http://www.gtfs-data-exchange.com/api/agency?agency=' + agency_id
+	agency_url = 'http://www.gtfs-data-exchange.com/api/agency?agency=' \
+		+ agency_id
 	agency_info = json.load(urllib.urlopen(agency_url))
 	agency_name = agency_info['data']['agency']['name']
 	return render_template('agency.html',
@@ -79,7 +80,8 @@ def download_file(unique_string):
 	keyName = unique_string + '.zip'
 	s3_key = boto.connect_s3().get_bucket(S3_BUCKET, validate = False).get_key(keyName)
 	if s3_key == None:
-		return 'Error: Your link has expired. Please try submitting your request again.'
+		return 'Error: Your link has expired. Please try submitting your ' \
+				+ 'request again.'
 	s3_url = s3_key.generate_url(expires_in = 60)
 	r.downloads += 1
 	db.session.commit()

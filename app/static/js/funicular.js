@@ -51,17 +51,23 @@ function fillAgencySelect(state) {
 function confirmGTFSSelection(description, date_added, user, fileURL) {
 	var GTFS_description_full = description + ', added by ' + user + ' ' +
 		moment.unix(date_added).calendar() + '.';
+	if(user === 'funicular user') {
+		agency_id = 'custom file';
+	} else {
+		agency_id = active_agency_id;
+	}
 	$('.GTFS-description').text(GTFS_description_full);
 	$('#modal1').modal('show');
 	$('#confirm').unbind('click');
 	$('#confirm').click(function() {
-        submitRequest(GTFS_description_full, fileURL, $('#name-input')[0].value,
-        	$('#email-input')[0].value, $('#user-type-select')[0].value,
-        	$('#mailing-list-input').is(':checked'));
+        submitRequest(GTFS_description_full, fileURL, agency_id,
+			$('#name-input')[0].value, $('#email-input')[0].value,
+			$('#user-type-select')[0].value,
+			$('#mailing-list-input').is(':checked'));
     });
 };
 
-function submitRequest(GTFS_description, fileURL, user_name, email, user_type, mailing_list) {
+function submitRequest(GTFS_description, fileURL, agency_id, user_name, email, user_type, mailing_list) {
 	var valid_request = validateRequest(user_name, email, user_type);
 	if(!valid_request) {
 		alert('Please correct errors and re-submit.');
@@ -73,9 +79,9 @@ function submitRequest(GTFS_description, fileURL, user_name, email, user_type, m
 	        url: url,
 	        type: 'POST',
 	        data: {
-	           	GTFS_description: GTFS_description,
+	        	GTFS_description: GTFS_description,
 	        	fileURL: fileURL,
-	        	agency_id: active_agency_id,
+	        	agency_id: agency_id,
 	        	user_name: user_name,
 	        	email: email,
 	        	user_type: user_type,
@@ -120,14 +126,14 @@ function validateRequest(name, email, user_type) {
 function getMaxWait(position) {
 	return 'Your file is #' + position + ' in the queue. Processing should ' +
 			'be complete in no more than ' + 30 * position + ' minutes.';
-}
+};
 
 function addAlert(type, dismissable, message) {
 	var d_str = '';
 	var button_html = '';
 	if(dismissable) {
-		d_str = 'dismissable'
-		button_html = '<button type="button" class="close" data-dismiss="alert">&times;</button>'
+		d_str = 'dismissable';
+		button_html = '<button type="button" class="close" data-dismiss="alert">&times;</button>';
 	};
 	var string = '<div class="alert alert-%TYPE% alert-%DISMISSABLE%">\
 		%BUTTON_HTML%\
@@ -140,18 +146,11 @@ function addAlert(type, dismissable, message) {
 	$('.flash-container').append(string);
 };
 
-function agencyReady() {
-	if(active_agency) {
-		fillAgencySelect(active_agency_state);
-		$('#state-select')[0].value = active_agency_state;
-		$('#agency-select')[0].value = active_agency_id;
-	} else {
-		fillAgencySelect('all');
-		$('#state-select')[0].value = '';
-		$('#agency-select')[0].value = '';
-		$('#state-select')[0].focus();
-	}
-	$('#submit').click(function(){
+function SelectGTFSReady() {
+	fillAgencySelect('all');
+	$('#state-select')[0].value = '';
+	$('#agency-select')[0].value = '';
+	$('#submit-existing').click(function(){
 		if($('#agency-select')[0].value === '') {
 			addAlert('danger', true, 'Error: no agency selected.');
 			$('#agency-select').focus();
@@ -159,15 +158,31 @@ function agencyReady() {
 			window.location = '/agency/' + $('#agency-select')[0].value;
 		}
 	});
+	$('#submit-url').click(function() {
+		if($('#custom-GTFS-url')[0].value.slice(-4) !== '.zip') {
+			addAlert('danger', true, 'Error: URL must point to a .zip file.');
+			$('#custom-GTFS-url').focus();
+		} else {
+			confirmGTFSSelection('custom GTFS file', moment().format('X'), 'funicular user', $('#custom-GTFS-url')[0].value);
+		}
+	});
+	// add GTFS file upload functionality
 	$('#state-select').change(function() {
 		$('#agency-select').find('option:not(:first)').remove();
 		fillAgencySelect($('#state-select')[0].value);
-   		$('#agency-select').focus();
-  	});
-  	$('#modal1').on('shown.bs.modal', function() {
-  		$('#name-input').focus();
-  	});
-  	$('#modal2').on('shown.bs.modal', function() {
-  		$('#close-modal2').focus();
-  	});
+		$('#agency-select').focus();
+	});
+	modalReady();
+};
+
+function modalReady() {
+	$('#modal1').on('shown.bs.modal', function() {
+		$('#name-input').focus();
+	});
+	$('#modal2').on('shown.bs.modal', function() {
+		$('#close-modal2').focus();
+	});
+	$('#modal3').on('shown.bs.modal', function() {
+		$('#close-modal3').focus();
+	});
 };

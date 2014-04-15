@@ -14,13 +14,15 @@
 		</div>
 		<div id="collapseOne" class="panel-collapse collapse">
 			<div class="panel-body">
-				<form class="form-inline" role="form">
+				<form role="form">
 					<div class="form-group">
+						<label for="state-select">State</label>
 						<select class="form-control" id="state-select">
 							<option value="" selected disabled>select state</option>
 						</select>
 					</div>
 					<div class="form-group">
+						<label for="agency-select">Agency</label>
 						<select name="agency" class="form-control" id="agency-select" required>
 							<option value="" selected disabled>select agency</option>
 						</select>
@@ -40,9 +42,14 @@
 		</div>
 		<div id="collapseTwo" class="panel-collapse collapse">
 			<div class="panel-body">
-				<form class="form-inline" role="form">
+				<form role="form">
 					<div class="form-group">
-						<input type="text" class="form-control" id="custom-GTFS-url" placeholder="Enter GTFS URL">
+						<label for="custom-GTFS-url">GTFS URL</label>
+						<input type="text" class="form-control" id="custom-GTFS-url" placeholder="enter GTFS URL">
+					</div>
+					<div class="form-group">
+						<label for="custom-GTFS-url-description">Description</label>
+						<input type="text" class="form-control" id="custom-GTFS-url-description" placeholder="enter file description">
 					</div>
 					<button type="button" id="submit-url" class="btn btn-primary">Go!</button>
 				</form>
@@ -53,13 +60,23 @@
 		<div class="panel-heading">
 			<h4 class="panel-title">
 				<a data-toggle="collapse" data-parent="#accordion" href="#collapseThree">
-					Upload GTFS file
+					Upload GTFS file &mdash; Not active yet!
 				</a>
 			</h4>
 		</div>
 		<div id="collapseThree" class="panel-collapse collapse">
 			<div class="panel-body">
-				Coming soon!
+				<form role="form">
+					<div class="form-group">
+						<label for="custom-GTFS-file">File</label>
+						<input type="file" id="custom-GTFS-file">
+					</div>
+					<div class="form-group">
+						<label for="custom-GTFS-file-description">Description</label>
+						<input type="text" class="form-control" id="custom-GTFS-file-description" placeholder="enter file description">
+					</div>
+					<button type="button" id="submit-file" class="btn btn-primary">Go!</button>
+				</form>
 			</div>
 		</div>
 	</div>

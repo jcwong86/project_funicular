@@ -12,7 +12,7 @@ function getAgencies(url) {
     }).fail(function() {
         console.log("Agency info retrieval failed!");
     });
-};
+}
 
 function fillStateSelect() {
 	stateList = [];
@@ -26,7 +26,7 @@ function fillStateSelect() {
 		$('#state-select').append('<option value="' + stateList[i] + '">' +
 				stateList[i] + '</option>');
 	}
-};
+}
 
 function fillAgencySelect(state) {
 	agencyList = [];
@@ -46,7 +46,7 @@ function fillAgencySelect(state) {
 		$('#agency-select').append('<option value="' + agencyList[i][0] + '">' +
 				agencyList[i][1] + '</option>');
 	}
-};
+}
 
 function confirmGTFSSelection(description, date_added, user, fileURL) {
 	var GTFS_description_full = description + ', added by ' + user + ' ' +
@@ -65,7 +65,7 @@ function confirmGTFSSelection(description, date_added, user, fileURL) {
 			$('#user-type-select')[0].value,
 			$('#mailing-list-input').is(':checked'));
     });
-};
+}
 
 function submitRequest(GTFS_description, fileURL, agency_id, user_name, email, user_type, mailing_list) {
 	var valid_request = validateRequest(user_name, email, user_type);
@@ -76,31 +76,31 @@ function submitRequest(GTFS_description, fileURL, agency_id, user_name, email, u
 		$('.user-email').text(email);
 		url = '/process_selection';
 		$.ajax({
-	        url: url,
-	        type: 'POST',
-	        data: {
-	        	GTFS_description: GTFS_description,
-	        	fileURL: fileURL,
-	        	agency_id: agency_id,
-	        	user_name: user_name,
-	        	email: email,
-	        	user_type: user_type,
-	        	mailing_list: mailing_list
-	        }
-	    }).done(function(str_queue_position) {
-	    	if (str_queue_position === "reject") {
+			url: url,
+			type: 'POST',
+			data: {
+				GTFS_description: GTFS_description,
+				fileURL: fileURL,
+				agency_id: agency_id,
+				user_name: user_name,
+				email: email,
+				user_type: user_type,
+				mailing_list: mailing_list
+			}
+		}).done(function(str_queue_position) {
+			if (str_queue_position === "reject") {
 				$('#modal3').modal('show');
-				console.log('Request not logged. Request for this email address already exists.')
+				console.log('Request not logged. Request for this email address already exists.');
 			} else {
 				$('#max-wait').text(getMaxWait(parseInt(str_queue_position)));
 				$('#modal2').modal('show');
-		    	console.log('Request logged!');
+				console.log('Request logged!');
 			}
-	    }).fail(function() {
-	        console.log('Request failed!');
-	    });
+		}).fail(function() {
+			console.log('Request failed!');
+		});
 	}
-};
+}
 
 function validateRequest(name, email, user_type) {
 	valid = true;
@@ -121,12 +121,12 @@ function validateRequest(name, email, user_type) {
 		valid = false;
 	}
 	return valid;
-};
+}
 
 function getMaxWait(position) {
 	return 'Your file is #' + position + ' in the queue. Processing should ' +
 			'be complete in no more than ' + 30 * position + ' minutes.';
-};
+}
 
 function addAlert(type, dismissable, message) {
 	var d_str = '';
@@ -134,17 +134,17 @@ function addAlert(type, dismissable, message) {
 	if(dismissable) {
 		d_str = 'dismissable';
 		button_html = '<button type="button" class="close" data-dismiss="alert">&times;</button>';
-	};
+	}
 	var string = '<div class="alert alert-%TYPE% alert-%DISMISSABLE%">\
 		%BUTTON_HTML%\
-	    %MESSAGE%\
-	    </div>';
+		%MESSAGE%\
+		</div>';
 	string = string.replace(/%TYPE%/, type);
 	string = string.replace(/%DISMISSABLE%/, d_str);
 	string = string.replace(/%BUTTON_HTML%/, button_html);
 	string = string.replace(/%MESSAGE%/, message);
 	$('.flash-container').append(string);
-};
+}
 
 function SelectGTFSReady() {
 	fillAgencySelect('all');
@@ -163,7 +163,19 @@ function SelectGTFSReady() {
 			addAlert('danger', true, 'Error: URL must point to a .zip file.');
 			$('#custom-GTFS-url').focus();
 		} else {
-			confirmGTFSSelection('custom GTFS file', moment().format('X'), 'funicular user', $('#custom-GTFS-url')[0].value);
+			confirmGTFSSelection($('#custom-GTFS-file-description')[0].value,
+				moment().format('X'), 'funicular user',
+				$('#custom-GTFS-url')[0].value);
+		}
+	});
+	$('#submit-file').click(function() {
+		if($('#custom-GTFS-file')[0].value.slice(-4) !== '.zip') {
+			addAlert('danger', true, 'Error: Uploaded file must have a .zip extension.');
+			$('#custom-GTFS-file').focus();
+		// } else {
+		// 	confirmGTFSSelection($('#custom-GTFS-url-description')[0].value,
+		// 		moment().format('X'), 'funicular user',
+		// 		$('#custom-GTFS-url')[0].value);
 		}
 	});
 	// add GTFS file upload functionality
@@ -173,7 +185,7 @@ function SelectGTFSReady() {
 		$('#agency-select').focus();
 	});
 	modalReady();
-};
+}
 
 function modalReady() {
 	$('#modal1').on('shown.bs.modal', function() {
@@ -185,4 +197,4 @@ function modalReady() {
 	$('#modal3').on('shown.bs.modal', function() {
 		$('#close-modal3').focus();
 	});
-};
+}

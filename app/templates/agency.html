@@ -7,11 +7,11 @@
 	<div class="page-header">
 		<h3>Select GTFS file
 			<span class="span-right"><small>
-				<a href="{{active_agency.data.agency.dataexchange_url}}">
-					GTFS Data Exchange</a>
+				<a href="{{active_agency.data.agency.dataexchange_url}}"
+					target="_blank">GTFS Data Exchange</a>
 				{% if active_agency.data.agency.license_url %}
-				| <a href="{{active_agency.data.agency.license_url}}">
-					license info</a>
+				| <a href="{{active_agency.data.agency.license_url}}"
+					target="_blank">license info</a>
 				{% endif %}
 			</small></span>
 		</h3>
@@ -45,7 +45,7 @@
 	<div class="well disclaimer-well">
 		<p>Add general disclaimers here.</p>
 		{% if active_agency.data.agency.license_url %}
-		<p>Click <a href="{{active_agency.data.agency.license_url}}">
+		<p>Click <a href="{{active_agency.data.agency.license_url}}" target="_blank">
 			here</a> for {{active_agency.data.agency.name}} GTFS licensing information.</p>
 		{% else %}
 		<p>No license information is available for {{active_agency.data.agency.name}}.</p>

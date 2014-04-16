@@ -7,7 +7,6 @@
     <meta name="description" content="">
     <meta name="author" content="">
     <!-- <link rel="shortcut icon" href="../../assets/ico/favicon.ico"> -->
-    <base target="_blank">
     {% if title %}
     <title>funicular &mdash; {{title}}</title>
     {% else %}
@@ -54,7 +53,7 @@
     <div class="container theme-showcase" role="main" id="body-container">
       <div class="page-header">
         {% if title %}
-        <h1><a class="unstyled-link" href="{{url_for('index')}}">funicular</a> &mdash; {{title}}</h1>
+        <h1>{{title}}</h1>
         {% else %}
         <h1>funicular</h1>
         {% endif %}
@@ -66,10 +65,13 @@
     <div id="footer">
       <div class="container">
         <p class="text-muted">&copy; 2014
-          <a tabindex="-1" href="http://www.jameswong.org">James Wong</a> and
-          <a tabindex="-1" href="http://www.twitter.com/drewdez">Andrew Desautels</a>
+          <a tabindex="-1" href="http://www.jameswong.org"
+              target="_blank">James Wong</a> and
+          <a tabindex="-1" href="http://www.twitter.com/drewdez"
+              target="_blank">Andrew Desautels</a>
           <span class="span-right">
-            <a href="https://github.com/jcwong86/project_funicular">view source on GitHub</a>
+            <a href="https://github.com/jcwong86/project_funicular"
+                target="_blank">view source on GitHub</a>
           </span>
         </p>
       </div>

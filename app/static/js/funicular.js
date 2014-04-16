@@ -163,7 +163,7 @@ function SelectGTFSReady() {
 			addAlert('danger', true, 'Error: URL must point to a .zip file.');
 			$('#custom-GTFS-url').focus();
 		} else {
-			confirmGTFSSelection($('#custom-GTFS-file-description')[0].value,
+			confirmGTFSSelection($('#custom-GTFS-url-description')[0].value,
 				moment().format('X'), 'funicular user',
 				$('#custom-GTFS-url')[0].value);
 		}
@@ -173,9 +173,9 @@ function SelectGTFSReady() {
 			addAlert('danger', true, 'Error: Uploaded file must have a .zip extension.');
 			$('#custom-GTFS-file').focus();
 		// } else {
-		// 	confirmGTFSSelection($('#custom-GTFS-url-description')[0].value,
-		// 		moment().format('X'), 'funicular user',
-		// 		$('#custom-GTFS-url')[0].value);
+		// 		confirmGTFSSelection($('#custom-GTFS-file-description')[0].value,
+		//		 moment().format('X'), 'funicular user',
+		//		 $('#custom-GTFS-url')[0].value);
 		}
 	});
 	// add GTFS file upload functionality

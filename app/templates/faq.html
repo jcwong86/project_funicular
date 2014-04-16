@@ -2,18 +2,20 @@
 {% extends 'base.html' %}
 
 {% block html_content %}
-<h4>This is taking <a href="http://www.reactiongifs.com/wp-content/uploads/2013/03/loading.gif">forever...</a></h4>
+<h4>This is taking
+    <a href="http://www.reactiongifs.com/wp-content/uploads/2013/03/loading.gif"
+    target="_blank">forever...</a></h4>
 <p>Admittedly, this isn't the fastest web-app. To keep it free and because the programming was originally intended for offline data processing, speed was never a priority. Depending on usage and demand, we'll consider whether or not to put in the time and dollars to speed things up later on. Just so you know, bus systems tend to take longer to process than rail because of the higher number of configurations and complexity.
 <p>For reference, it takes about half an hour for Atlanta's rail and bus networks. Small systems may be less than a few minutes. Each request is handled in the order it was received and one-at-a-time. You should know how many files are queued up before yours, so please don't make multiple requests for the same file.  If you don't get something in an hour or so, please e-mail us and we'll try to get you fixed up.</p>
 <br>
 <h4>Why are routes grouped the way they are? Wouldn't it be easier to just use a route_id to summarize each one?</h4>
 <p>Routes are tricky since each agency codes them differently. In order to satisfy the least common denominator in this file format, each route geography is created as a unique combination of a route_id, route_short_name, route_long_name, trip_headsign, direction_id, and unique geography (q_shape_id). So if two departures have the same route_id (let's say, BLUE) but one runs the full length with a headsign reading "LastStop" and one runs a shorter route configuration with a headsign "halfwayStop", you'll end up with two different geometries. One will be BLUE-LastStop, and the other will be Blue-halfwayStop. The typical number of trips are included for you to make your own decisions about how to use and group the data. If there are 100 trips along the main route and 2 trips along the shorter one, you can make the call if its worth it to discard the smaller dataset. Doing so this way is comprehensive on our end and makes no assumptions on your behalf.</p>
 <br>
-<h4>Isn't this data already included in GTFS feeds? What are you actually <a href="http://youtu.be/2SoWNMNKNeM"<i>doing</i></a>?</h4>
+<h4>Isn't this data already included in GTFS feeds? What are you actually <a href="http://youtu.be/2SoWNMNKNeM" target="_blank"<i>doing</i></a>?</h4>
 <p>Yes, all the data provided in these shapefiles is derived from data provided in the GTFS feeds. Some of the data is transferred directly (such as identifier information, geographies, names etc). Some of the data is calculated (which is why it takes some time to run). This data includes things like trip durations, numbers of trips by day of week, hours of service etc. These aren't difficult to calculate, but they require a strong understanding of GTFS feed construction and their limitations. If you don't care to know about all that, funicular will  create files quickly for you without requiring background knowledge on GTFS. </p>
 <br>
 <h4>I think people at our firm/school/non-profit could really benefit from a class on GTFS. Know where we could get one?</h4>
-<p>Sure! There's a lot of information online already and a few Google searches for "GTFS transit data" will get you started. But, <a href="http://jameswong.org">one of the developers</a> on this project actually wrote his masters thesis on the subject and loves sharing. Reach out and he'd be happy to talk to you about organizing a class or presentation. He's based in New York but is willing to travel depending on timing.</p>
+<p>Sure! There's a lot of information online already and a few Google searches for "GTFS transit data" will get you started. But, <a href="http://jameswong.org" target="_blank">one of the developers</a> on this project actually wrote his masters thesis on the subject and loves sharing. Reach out and he'd be happy to talk to you about organizing a class or presentation. He's based in New York but is willing to travel depending on timing.</p>
 <br>
 <h4>Is this site free?</h4>
 <p>Yes, for now the whole site and service is free for anyone to use.</p>

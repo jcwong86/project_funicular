@@ -12,13 +12,14 @@ if MAIL_SERVER != 'localhost':
 	MAIL_PASSWORD = os.environ['MAIL_PASSWORD']
 	MAIL_USE_TLS = False
 	MAIL_USE_SSL = True
+	MAIL_PORT_LOGGING = 587
 else:
 	MAIL_USERNAME = None
 	MAIL_PASSWORD = None
 APP_EMAIL_ADDRESS = os.environ['APP_EMAIL_ADDRESS']
 
 # administrator settings
-ADMINS = ['admin1_email', 'admin2_email']
+ADMINS = os.environ['ADMINS'].split(', ')
 
 # database information
 SQLALCHEMY_DATABASE_URI = os.environ['DATABASE_URL']
